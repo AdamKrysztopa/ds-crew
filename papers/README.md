@@ -16,6 +16,7 @@ deepverifier-2601.15808.pdf 2601.15808
 empirical-mcts-2602.04248.pdf 2602.04248
 agent-alpha-2602.02995.pdf 2602.02995
 swe-search-2410.20285.pdf 2410.20285
+blackboard-2510.01285.pdf 2510.01285
 EOF
 ```
 
@@ -44,6 +45,7 @@ EOF
 | **Empirical-MCTS: Continuous Agent Evolution via Dual-Experience MCTS** — Lu et al. (2026) | [2602.04248](https://arxiv.org/abs/2602.04248) | Dual-experience (success + failure) memory to steer MCTS; informs the anti-repeat / escalation design. |
 | **Agent Alpha: Tree Search Unifying Generation, Exploration and Evaluation** — Tang, Chen et al. (GWU, 2026) | [2602.02995](https://arxiv.org/abs/2602.02995) | Unifies generation/exploration/evaluation in one tree-search loop; reference architecture for a search-mode `plus`. |
 | **SWE-Search: Enhancing Software Agents with MCTS and Iterative Refinement** — Antoniades, Örwall et al. (ICLR 2025) | [2410.20285](https://arxiv.org/abs/2410.20285) | Proof that MCTS + self-refinement transfers to code-writing agents; closest precedent for adding search to a code-generating DS agent. |
+| **LLM-Based Multi-Agent Blackboard System for Information Discovery in Data Science** — Salemi, Parmar, Goyal, Song, **Yoon, Zamani, Pfister, Palangi** (Google / UMass, 2025–26) | [2510.01285](https://arxiv.org/abs/2510.01285) | **Substrate for the "Data Science SPIKE" skill (Track D).** By the DS-STAR authors. A central agent posts to a shared blackboard; autonomous sub-agents *volunteer* by capability (no rigid master-slave). +13–57% relative end-to-end success on KramaBench/DSBench/DA-Code. The "post requests, collect from all volunteers" pattern is exactly the multi-agent ensemble substrate. |
 
 ---
 

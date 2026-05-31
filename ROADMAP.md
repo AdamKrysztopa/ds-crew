@@ -116,6 +116,55 @@ from DS-STAR's question-answering loop. Exploratory.
 
 ---
 
+## Track D — `ds-spike`: the multi-data-scientist ensemble (capstone)
+
+> **The idea (user's):** for a specific data-science problem, run a *spike* — several independent
+> "data scientists" working the same problem in parallel — then collect and reconcile findings from
+> all of them into one answer plus the disagreements.
+
+**Status:** 🟡 capstone — buildable as soon as A1 + B1 land (see "When can we start", below).
+
+**Why this is principled, not crazy.** This is **inference-time scaling by parallel rollouts +
+aggregation** — best-of-N / self-consistency lifted from the verifier (where v2 already uses 3× vote)
+to the *whole pipeline*. The collaboration substrate already exists in the literature, by the DS-STAR
+authors themselves: the **blackboard architecture** ([2510.01285](https://arxiv.org/abs/2510.01285)) —
+a central agent posts a request to a shared blackboard and autonomous sub-agents *volunteer* by
+capability, no rigid master-slave coordinator. It reports **+13–57% relative** end-to-end success on
+the same benchmarks DS-STAR uses. Agent-Alpha ([2602.02995](https://arxiv.org/abs/2602.02995)) and
+Empirical-MCTS ([2602.04248](https://arxiv.org/abs/2602.04248)) supply the generation/evaluation and
+dual-experience-memory pieces.
+
+**Shape.**
+1. **Spec once (B1).** Run `ds-clarify` first so every scientist solves the *same* question — without
+   a shared spec, parallel agents diverge on intent, not method, and the ensemble is noise.
+2. **Dispatch N diverse solvers.** N parallel `ds-star-plus` runs that differ deliberately — model
+   tier (Opus vs Sonnet), strategy/persona (cautious statistician · ML-first · SQL/join-first ·
+   assumption-minimal), and seed. Diversity is what makes an ensemble beat a single run. Uses the
+   superpowers `dispatching-parallel-agents` machinery; each agent runs in isolation.
+3. **Blackboard collection.** Each scientist posts to a shared workspace: `{answer, final code, plan,
+   verifier verdict + rationale, key assumptions}` — the [2510.01285] post-and-volunteer pattern.
+4. **Lead/aggregator reconciles (Opus).** A meta-agent clusters answers, runs the **A1 rubric
+   verifier** on each, and produces: a **consensus answer + confidence**, *and* a **minority report**
+   — where solvers disagreed and *why* (divergent assumptions are themselves the insight: "3 of 5
+   excluded refunds; 2 included them → the number hinges on that choice"). Agreement across diverse
+   strategies is a far stronger correctness signal than one agent's self-verification.
+
+**Cost (the honest caveat).** N full runs ≈ N× the cost — the most expensive thing in the repo, and
+in direct tension with the cost-hardening that defines `plus`. So `ds-spike` is **explicitly
+high-stakes-only**: irreversible decisions, board-level numbers, contested results, or a task where
+two earlier single runs disagreed. Default N = 3. It is a deliberate "spend for confidence" mode, the
+mirror image of v2's "save on plumbing."
+
+**Dependencies:** **A1** (the verifier is the aggregator's scoring function) and **B1** (the shared
+spec). Reuses the blackboard pattern; independent of A2 (A2 is *intra*-agent search, `ds-spike` is
+*inter*-agent search — orthogonal, composable later).
+
+**Files:** new `skills/ds-spike/SKILL.md` + `references/aggregation.md` (clustering + minority-report
+rules) + `references/personas.md` (the diversity axes) + `references/evidence.md` (cite 2510.01285).
+**Effort:** medium–large, mostly orchestration over existing skills.
+
+---
+
 ## Track C — repo evolution
 
 Once Track A1 + B1 land, the repo is no longer "just DS-STAR" — it's a **suite of recent
@@ -130,11 +179,34 @@ data-science skills** (autonomous solving, human-in-the-loop clarification, prof
 
 ## Suggested order
 
-1. **A1** (rubric verifier) — biggest reliability win, smallest blast radius, cost-aligned.
-2. **B1** (`ds-clarify`) — the human-in-the-loop skill you asked for; pairs naturally with A1's rubric.
-3. **C** (repo rename) — once two new things exist to justify the broader name.
-4. **A2** (search mode) — only after A1 makes the verifier a trustworthy reward signal.
-5. **B2 / B3 / A3** — opportunistic.
+1. **A1** (rubric verifier) — biggest reliability win, smallest blast radius, cost-aligned. *No blockers.*
+2. **B1** (`ds-clarify`) — the human-in-the-loop skill; pairs naturally with A1's rubric. *No blockers.*
+3. **D** (`ds-spike`) — the multi-data-scientist ensemble. **Unlocked the moment A1 + B1 exist** (it
+   uses A1 as its judge and B1 as its shared spec). The capstone — build it third.
+4. **C** (repo rename) — once A1 + B1 (+ D) exist, the "suite of data-science skills" name is earned.
+5. **A2** (search mode) — only after A1 makes the verifier a trustworthy reward signal.
+6. **B2 / B3 / A3** — opportunistic.
 
-Open decisions before building: (1) A2 default-off vs cut entirely; (2) final skill names; (3) whether
-`ds-clarify` writes its spec into the same data dir the DS-STAR skills read from.
+```
+A1 (rubric verifier) ─┐
+                      ├─► D (ds-spike ensemble) ─► C (repo rename)
+B1 (ds-clarify) ──────┘
+A2 (MCTS) ── independent, opt-in, later
+```
+
+## When can we start to implement "all"?
+
+**Now — nothing is blocked at the front of the chain.** The critical path is **A1 → B1 → D**, and
+A1 has zero dependencies. So:
+
+- **Start today:** A1 (rubric-guided verifier). Pure upgrade to one prompt + SKILL.md + evals; low risk.
+- **Then:** B1 (`ds-clarify`), planned through the brainstorming + write-a-skill skills first.
+- **Then `ds-spike` becomes buildable** — it is *only* gated on A1 + B1, both of which are small/medium.
+  Nothing in the SPIKE idea needs the expensive A2 (MCTS) first.
+
+In short: we can begin the whole sequence immediately; `ds-spike` is reachable right after the two
+foundational pieces, not after the entire backlog.
+
+Open decisions before building: (1) A2 default-off vs cut entirely; (2) final skill names
+(`ds-clarify`, `ds-spike`?); (3) whether `ds-clarify` writes its spec into the same data dir the
+DS-STAR skills read from; (4) `ds-spike` default N and its diversity axes (model × persona × seed).

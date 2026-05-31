@@ -146,6 +146,8 @@ provides checkable test cases.
 ## What's next
 
 This repo is growing from "a DS-STAR implementation" into a suite of recent data-science skills.
-The planned work — a rubric-guided verifier upgrade (DeepVerifier), an optional MCTS search mode,
-and a human-in-the-loop `ds-clarify` skill — is laid out in [`ROADMAP.md`](ROADMAP.md), each item
-tied to a paper in the bibliography at [`papers/README.md`](papers/README.md).
+The planned work — a rubric-guided verifier upgrade (DeepVerifier), a human-in-the-loop `ds-clarify`
+skill, a capstone `ds-spike` that runs many diverse data scientists in parallel and reconciles their
+findings on a shared blackboard, and an optional MCTS search mode — is laid out in
+[`ROADMAP.md`](ROADMAP.md), each item tied to a paper in the bibliography at
+[`papers/README.md`](papers/README.md).
