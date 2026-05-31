@@ -1,6 +1,6 @@
 # Data-science skill suite for Claude Code
 
-> **Thirteen installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
+> **Fourteen installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
 > (Nam et al., 2025) and follow-on research — answering analytical questions over data files by
 > writing and executing Python through an iterative loop that **never trusts code just because it
 > ran**, plus clarification, ensembling, profiling, and exploration skills around it.
@@ -55,10 +55,13 @@ Invoke explicitly in any Claude Code session:
 /ds-vote          # self-consistency N-vote: majority answer + stability score
 /ds-search        # standalone MCTS search: tree-search a single hard task
 /ds-memory        # persistent recipe store: remember and reuse what worked across sessions
+/ds-env-setup     # set up / verify the Python env: detects uv/venv/conda/poetry/pipenv, installs core packages
 ```
 
 Or just ask an analytical question over a data file — Claude will trigger the right skill
 automatically.
+
+> **First time?** Run `/ds-env-setup` to verify your project's Python environment has the packages the analysis skills need.
 
 ### Updating / uninstalling
 
@@ -69,7 +72,7 @@ claude plugin uninstall ds-crew@ds-crew
 
 ---
 
-## The thirteen skills
+## The fourteen skills
 
 | skill | what it does | reach for it when |
 |-------|--------------|-------------------|
@@ -86,6 +89,7 @@ claude plugin uninstall ds-crew@ds-crew
 | **`ds-vote`** | Self-consistency N-vote — same solver N times, majority answer + stability | Quick stability check; moderate-stakes question |
 | **`ds-search`** | Standalone MCTS search — tree-search a single hard task | One task keeps failing greedy; want alternative solution paths |
 | **`ds-memory`** | Persistent recipe store — remember and reuse what worked across sessions | Inspect/prune past analyses; seed new runs from history |
+| **`ds-env-setup`** | Set up / verify the Python env — detects uv/venv/conda/poetry/pipenv, installs core packages, offers a SessionStart hook | Before first analysis; after changing env; `ImportError` during a run |
 
 > **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)**
 
