@@ -20,6 +20,8 @@
 - Script: `scripts/run_manifest.py` — `from run_manifest import build_manifest, write_manifest`
 - Reproducibility guarantee: re-running the same code on the same inputs must produce the same answer
 
+At FINALIZE, pass the run's token `usage` (from the model response metadata) and measured `latency_s` (wall-clock around the solve) into `build_manifest(...)` via the new optional keyword args; `cost_usd` is derived automatically via `estimate_cost`. This makes every run self-reporting and doubles as benchmark instrumentation (Phase 1). Example: `build_manifest(question, code, inputs, answer, verdict, model, usage=response.usage, latency_s=elapsed)`.
+
 ## What to surface to the user
 
 - At end of run: print the manifest path and `code_sha256` so the user can reproduce or audit
