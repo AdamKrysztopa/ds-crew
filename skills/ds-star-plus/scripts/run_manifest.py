@@ -8,7 +8,20 @@
 import hashlib, json, os
 from datetime import datetime, timezone
 
-def build_manifest(question, code, inputs, answer, verdict, model):
+_RATES_PER_MTOK = {  # USD per 1M tokens (input, output); update as pricing changes
+    "claude-haiku-4-5":  (1.0,  5.0),
+    "claude-sonnet-4-6": (3.0, 15.0),
+    "claude-opus-4-8":  (15.0, 75.0),
+}
+
+def estimate_cost(model, usage):
+    rate_in, rate_out = _RATES_PER_MTOK.get(model, (0.0, 0.0))
+    return (usage.get("input_tokens", 0) / 1_000_000) * rate_in + \
+           (usage.get("output_tokens", 0) / 1_000_000) * rate_out
+
+def build_manifest(question, code, inputs, answer, verdict, model,
+                   usage=None, latency_s=None):
+    usage = usage or {}
     return {
         "question": question,
         "inputs": list(inputs),
@@ -16,6 +29,9 @@ def build_manifest(question, code, inputs, answer, verdict, model):
         "answer": answer,
         "verdict": verdict,
         "model": model,
+        "usage": usage,
+        "latency_s": latency_s,
+        "cost_usd": round(estimate_cost(model, usage), 6),
         "created_utc": datetime.now(timezone.utc).isoformat(),
     }
 
