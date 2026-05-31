@@ -124,6 +124,17 @@ for side, x, label_anchor, tx in [("L", box_left_x - 14, "start", box_left_x - 1
 
 svg.append('</svg>')
 
+# v1.1 — update pending v1.2
+# v1.2 additions not yet rendered in the SVG:
+#   + kernel/DAG/memory/debate/conduct
+# To regenerate with v1.2 content, extend ROWS above or add a second section
+# (e.g. a separate table block appended below the main diagram rows) covering:
+#   - Stateful kernel (kernel_runner.py, track F)
+#   - DAG planning (task graph {id, goal, deps, status}, track G)
+#   - Cross-session memory (memory_store.py, track E)
+#   - Debate in ds-spike (≤2 cross-critique rounds, track I)
+#   - ds-conduct orchestrator (Peek→Grill→Assemble→Execute, track K)
+
 out = "architecture-comparison.svg"
 with open(out, "w") as f:
     f.write("\n".join(svg))

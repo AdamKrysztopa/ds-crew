@@ -70,3 +70,18 @@ Both asymmetries above are grounded in the paper, not asserted: the cost asymmet
 ablations (removing descriptions: hard 45.24 → 26.98; removing the router: 45.24 → 39.95). The
 full mapping from each v2 change to its supporting table/number is in
 `skills/ds-star-plus/references/evidence.md`.
+
+## v1.2 additions (tracks E–M)
+
+The following capabilities extend v2 without changing the shared spine:
+
+| Capability | What was added | Opt-in / Default |
+|---|---|---|
+| Sandbox + provenance (J) | `run_manifest.py` emits SHA-256 + inputs + verdict per run; `sandbox.md` enforces temp-dir discipline | Default (runs at FINALIZE) |
+| Stateful kernel (F) | `kernel_runner.py` — persistent IPython kernel bound to `sys.executable`; mandatory clean re-run before FINALIZE | Opt-in (script mode default) |
+| DAG planning (G) | Plan as task graph `{id, goal, deps, status}`; node-level verify; descendant-only replan on failure | Escalated (linear chain default) |
+| Cross-session memory (E) | `memory_store.py` — append-only JSONL; seeded at PLAN, recorded at FINALIZE on clean verdict | Opt-in (no-op if store absent) |
+| Debate in ds-spike (I) | ≤2 cross-critique rounds before aggregation; `n_revised` field; anti-herding guard | Opt-in (`debate: true`) |
+| Standalone primitives (L) | ds-verify, ds-reconcile, ds-vote, ds-search expose the embedded building blocks | Standalone skills |
+| ds-model (H) | AIDE solution-tree with leaderboard + leakage/CV discipline | New skill |
+| ds-conduct (K) | Data-aware orchestrator: Peek→Grill→Assemble plan→Confirm+Execute | New skill (capstone) |
