@@ -47,6 +47,11 @@ Sonnet), strategy/persona (cautious statistician · ML-first · SQL/join-first �
 and random seed. Each runs in isolation (use the parallel-agent dispatch machinery) against the
 same spec and data.
 
+**Memory (opt-in):** If a store exists at `./.ds-crew-memory/recipes.jsonl`, seed each persona's
+assumption list with relevant minority-report assumptions from prior runs retrieved via `retrieve()`.
+This surfaces historical disagreement points as explicit starting assumptions, sharpening diversity
+without biasing solvers toward the same answer.
+
 Execution policy + provenance: see `../ds-star-plus/references/sandbox.md`.
 
 ### Stage 3 — Collect on the blackboard

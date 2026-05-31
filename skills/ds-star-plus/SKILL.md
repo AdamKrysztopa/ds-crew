@@ -135,6 +135,7 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
    digest. Cache both. Retrieve/trim if it is a data lake.
 2. **Initialize** with one simple executable step (Haiku planner → Sonnet coder) and run it.
    For multi-file joins or multiple independent outputs, represent the plan as a DAG (see `references/planning_graph.md`); linear chain is the default for simple tasks.
+   **Memory (opt-in):** If `./.ds-crew-memory/recipes.jsonl` exists, call `retrieve(store, task_signature(question), data_fingerprint)` to seed the planner with matching recipes as *suggestions* (never blindly trusted — the verifier still gates every step).
 3. **Verify** (Opus): get `{score, rubric, checks, reason, missing}` (validate with
    `scripts/verify_schema.py`). Borderline/high-stakes → 3x vote. `score == 4` and no rubric
    `fail` → Stage 5.
@@ -144,6 +145,7 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
    execute, return to step 3. Cap at 20 rounds; on cap, finalize best plan and say so.
    On a node failure in a DAG plan, re-wire only the failed node's descendants (see `references/planning_graph.md`); keep oscillation/branch logic unchanged.
 5. **Finalize** (Haiku, Sonnet if format is complex) to the exact required output format.
+   **Memory (opt-in):** On a clean verdict (`is_sufficient`), call `record(store, {task_signature, data_fingerprint, plan, verified_code_snippet, verifier_score:4, assumptions, outcome:"ok"})` to bank this recipe for future runs.
 6. **Debug** on any error: trim trace (Haiku) → fix with data context (Sonnet, Opus after 2
    failures).
 
