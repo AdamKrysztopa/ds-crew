@@ -145,6 +145,8 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
 6. **Debug** on any error: trim trace (Haiku) → fix with data context (Sonnet, Opus after 2
    failures).
 
+Execution policy + provenance: see `references/sandbox.md`.
+
 ## Early-exit guardrail (cost)
 
 Easy tasks often finish in one round; the paper (§4.3, Fig 4) shows easy tasks average 3.0 rounds
