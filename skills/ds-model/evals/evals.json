@@ -1,0 +1,48 @@
+{
+  "skill_name": "ds-model",
+  "note": "Checkable eval cases for the AutoML solution-tree skill. Prompts are realistic ML tasks; assertions are objectively verifiable against skill output. Generate or adapt fixture files under data/ before running.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "regression-house-prices",
+      "prompt": "Using house_train.csv (features: GrLivArea, OverallQual, GarageCars, TotalBsmtSF, YearBuilt; target: SalePrice), train a regression model to predict house prices. Use an 80/20 train/val split with random_state=42. Report the held-out RMSE.",
+      "expected_output": "A held-out RMSE value on the 20% validation split, achieved with at least one draft in the solution tree, all transformers fit on training data only.",
+      "assertions": [
+        "Reported metric is RMSE on the held-out validation split, not on training data",
+        "Train/val split is created before any feature transformation (no leakage)",
+        "At least one leaderboard node is recorded with node_id, score, and parent",
+        "Leakage checklist is confirmed: transformers fit on train only, no target-derived features",
+        "RMSE is a positive finite number (not NaN, not a classification metric like AUC)"
+      ],
+      "files": ["house_train.csv"]
+    },
+    {
+      "id": 2,
+      "name": "classification-churn",
+      "prompt": "Using churn.csv (features: tenure, MonthlyCharges, TotalCharges, Contract, PaymentMethod; target: Churn), predict customer churn. Use a stratified 80/20 train/val split with random_state=0. Report AUC on the held-out validation set. Iterate at least two drafts.",
+      "expected_output": "AUC on the held-out validation split from the best draft in the solution tree, with at least two drafts compared on the same split.",
+      "assertions": [
+        "Reported metric is AUC on the held-out validation split, not accuracy on training data",
+        "Split is stratified on the Churn target to preserve class balance",
+        "At least two leaderboard nodes are recorded; second draft references the first as parent",
+        "Categorical features (Contract, PaymentMethod) are encoded using a transformer fit on train only",
+        "Leakage checklist confirmed: no target-derived features, no post-hoc feature selection on full data"
+      ],
+      "files": ["churn.csv"]
+    },
+    {
+      "id": 3,
+      "name": "kaggle-submission-format",
+      "prompt": "Using titanic_train.csv and titanic_test.csv, train a classifier to predict Survived. Use sample_submission.csv as the output template. Produce a submission.csv with exactly the columns and row order of sample_submission.csv.",
+      "expected_output": "submission.csv whose columns (PassengerId, Survived) and row count exactly match sample_submission.csv, with integer 0/1 predictions.",
+      "assertions": [
+        "Output file has exactly two columns: 'id' or 'PassengerId' matching sample_submission.csv, and the prediction column matching sample_submission.csv",
+        "Row count in submission.csv equals the row count in sample_submission.csv",
+        "Prediction values are binary integers (0 or 1), not floats or probabilities",
+        "Model was trained only on titanic_train.csv; titanic_test.csv was never used for fitting",
+        "Leakage checklist confirmed before submission: transformers fit on train set, no future-data features"
+      ],
+      "files": ["titanic_train.csv", "titanic_test.csv", "sample_submission.csv"]
+    }
+  ]
+}
