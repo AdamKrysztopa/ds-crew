@@ -1,0 +1,9 @@
+{
+  "name": "ds-star",
+  "version": "1.0.0",
+  "description": "DS-STAR and DS-STAR+ iterative data-science agent skills. Answers analytical questions over data files (CSV, JSON, Excel, SQLite, and more) by writing and executing Python through a plan → implement → execute → verify → route loop with LLM-as-judge sufficiency checking.",
+  "author": {
+    "name": "Adam Krysztopa",
+    "email": "krysztopa@gmail.com"
+  }
+}

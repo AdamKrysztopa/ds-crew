@@ -1,0 +1,135 @@
+# DS-STAR skill suite for Claude Code
+
+> **Two installable Claude Code skills** that implement the DS-STAR data-science agent
+> (Nam et al., 2026) — answering analytical questions over data files by writing and
+> executing Python through an iterative loop that **never trusts code just because it ran**.
+
+---
+
+## Why DS-STAR?
+
+Most AI data-science workflows stop when the code executes. DS-STAR doesn't.
+It grows a plan one verified step at a time and uses an LLM-as-judge to confirm
+that the **actual execution output** answers the actual question — catching silent failures
+like wrong filters, missing joins, and format mismatches before they reach you.
+
+---
+
+## Installation
+
+### 1. Add the marketplace (one-time per machine)
+
+```bash
+claude plugin marketplace add AdamKrysztopa/ds-stats-with-claude
+```
+
+### 2. Install the plugin — choose your scope
+
+```bash
+# All your projects
+claude plugin install ds-star@ds-star --scope user
+
+# This project only (saved to .claude/settings.json)
+claude plugin install ds-star@ds-star --scope project
+
+# Local override, not committed
+claude plugin install ds-star@ds-star --scope local
+```
+
+### 3. Use
+
+Invoke explicitly in any Claude Code session:
+
+```
+/ds-star
+/ds-star-plus
+```
+
+Or just ask an analytical question over a data file — Claude will trigger the skill automatically.
+
+### Updating / uninstalling
+
+```bash
+claude plugin update ds-star@ds-star
+claude plugin uninstall ds-star@ds-star
+```
+
+---
+
+## Which skill to use
+
+| | `ds-star` | `ds-star-plus` |
+|---|---|---|
+| **Model** | Single model throughout | Haiku / Sonnet / Opus per role |
+| **Verifier output** | Yes / No | `{sufficient, reason, missing}` |
+| **Backtracking** | Truncate + regenerate | + anti-repeat list, oscillation handling |
+| **Token cost** | Full descriptions every round | Schema digests by default |
+| **Best for** | Baseline / reproducing the paper | Production, multi-file, cost-sensitive work |
+
+---
+
+## How the loop works
+
+```
+ANALYZE every file (real schema, not guesses)
+        │
+INITIAL simple step (load + peek)
+        │
+        ▼
+   ┌─── IMPLEMENT (Python script)
+   │         │
+   │      EXECUTE
+   │         │
+   │      VERIFY ──── sufficient? ──► FINALIZE ──► answer
+   │         │ no
+   │      ROUTE: add next step  OR  backtrack to wrong step
+   └─────────┘
+   (max 20 rounds)
+```
+
+The verifier is the load-bearing piece: a false "sufficient" ends the run with a wrong
+answer that nothing downstream catches, so `ds-star-plus` pins it to Opus and optionally
+runs it 3× with majority vote on borderline calls.
+
+---
+
+## Repository layout
+
+```
+ds-stats-with-claude/
+├── skills/
+│   ├── ds-star/                    v1 — faithful paper implementation
+│   │   ├── SKILL.md
+│   │   ├── references/
+│   │   │   ├── prompts.md          role prompts for each loop step
+│   │   │   └── worked_example.md   annotated 5-round trace
+│   │   └── scripts/
+│   │       └── analyze_file.py     Stage 1 file describer
+│   └── ds-star-plus/               v2 — reliability- and cost-hardened
+│       ├── SKILL.md
+│       ├── evals/
+│       │   └── evals.json          checkable test cases
+│       ├── references/
+│       │   ├── model_routing.md    Opus/Sonnet/Haiku routing policy
+│       │   ├── prompts.md          upgraded prompts (structured verifier)
+│       │   └── worked_example.md   annotated trace with backtracking
+│       └── scripts/
+│           ├── analyze_file.py     describer + schema digest emitter
+│           └── route_model.py      pick_model() routing helper
+├── .claude-plugin/
+│   ├── plugin.json                 plugin manifest
+│   └── marketplace.json            marketplace manifest
+├── ARCHITECTURE.md                 v1 vs v2 side-by-side
+├── architecture-comparison.svg     mirrored diagram
+└── make_diagram.py                 regenerate the SVG
+```
+
+---
+
+## Reference
+
+Nam et al. (2026). *DS-STAR: Data Science Agent for Solving Diverse Tasks across
+Heterogeneous Formats and Open-Ended Questions.*
+The v2 additions (model routing, structured verifier, oscillation handling, digest caching)
+are design extensions — principled but independently unbenchmarked.
+`skills/ds-star-plus/evals/evals.json` provides checkable test cases.

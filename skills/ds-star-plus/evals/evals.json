@@ -1,0 +1,55 @@
+{
+  "skill_name": "ds-star-plus",
+  "note": "Test cases for the iterative loop. Prompts are realistic; assertions are objectively checkable. Generate the referenced fixture files under data/ before running, or adapt paths to the user's own files.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "single-file-aggregate-easy",
+      "prompt": "From transactions.csv, what percentage of transactions used a credit card? Round to two decimals.",
+      "expected_output": "A single percentage rounded to 2 dp, e.g. 63.41, derived only from transactions.csv.",
+      "assertions": [
+        "Answer is a number with exactly two decimal places",
+        "Computation uses only transactions.csv (no fabricated columns)",
+        "Loop early-exits in ~1 round (easy task; should not burn many rounds)"
+      ],
+      "files": ["transactions.csv"]
+    },
+    {
+      "id": 2,
+      "name": "multi-file-join-hard",
+      "prompt": "Using payments.csv, merchant_data.json, and fees.json, compute the total fee Rafa_AI paid in February 2023. The fee per transaction is fixed_amount + rate * eur_amount / 10000, matched by the fee rule whose conditions the transaction satisfies.",
+      "expected_output": "A single EUR total that correctly joins all three files and applies the matched fee rule, not a naive all-transactions sum.",
+      "assertions": [
+        "Reads all three files (payments.csv, merchant_data.json, fees.json)",
+        "Handles merchant_data 'acquirer' stored as a list, not a scalar (no length-mismatch crash)",
+        "Verifier rejects at least one intermediate plan before the final answer (sufficiency check fires)",
+        "Final number reported with the requested precision"
+      ],
+      "files": ["payments.csv", "merchant_data.json", "fees.json"]
+    },
+    {
+      "id": 3,
+      "name": "format-match-csv",
+      "prompt": "Compute total quantity and total revenue per bike category for 2016-2018 from order_items.csv and products.csv, accounting for discount. Write result.csv matching the exact column order of sample_result.csv.",
+      "expected_output": "result.csv whose columns and order exactly match sample_result.csv, with discount-adjusted revenue.",
+      "assertions": [
+        "Output file column names and order match sample_result.csv exactly",
+        "Revenue accounts for discount (quantity * list_price * (1 - discount))",
+        "Filtered to model years 2016-2018"
+      ],
+      "files": ["order_items.csv", "products.csv", "sample_result.csv"]
+    },
+    {
+      "id": 4,
+      "name": "wrong-premise-robustness",
+      "prompt": "From sales.csv, give the average order value for NexPay transactions in Q4.",
+      "expected_output": "If there is no payment-gateway column, the agent should discover the right column (e.g. card_scheme) from the file description rather than silently dropping the NexPay filter or inventing a column.",
+      "assertions": [
+        "Agent does not fabricate or silently ignore the NexPay condition",
+        "Agent inspects the actual schema before filtering",
+        "Final answer states any assumption made about how NexPay was matched"
+      ],
+      "files": ["sales.csv"]
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="894" viewBox="0 0 1180 894" font-family="Georgia, 'Times New Roman', serif">
+<rect width="1180" height="894" fill="#F3EEE3"/>
+<text x="40" y="56" font-size="34" fill="#23221E" font-weight="bold">DS-STAR &#8212; architecture, back to back</text>
+<text x="40" y="86" font-size="16" fill="#6F6A5E">Shared six-stage loop down the spine. v1 (faithful) branches left; v2 (hardened) branches right.</text>
+<text x="40" y="120" font-size="13" fill="#6F6A5E" font-family="'Courier New', monospace">v2 model tier:</text>
+<rect x="170" y="105" width="14" height="14" rx="3" fill="#C2902B"/>
+<text x="190" y="117" font-size="13" fill="#23221E" font-family="'Courier New', monospace">Haiku</text>
+<rect x="280" y="105" width="14" height="14" rx="3" fill="#2E6B6A"/>
+<text x="300" y="117" font-size="13" fill="#23221E" font-family="'Courier New', monospace">Sonnet</text>
+<rect x="390" y="105" width="14" height="14" rx="3" fill="#9A3B2C"/>
+<text x="410" y="117" font-size="13" fill="#23221E" font-family="'Courier New', monospace">Opus</text>
+<text x="40" y="178" font-size="18" fill="#23221E" font-weight="bold">v1 &#183; ds-star</text>
+<text x="590.0" y="178" font-size="15" fill="#6F6A5E" text-anchor="middle" font-family="'Courier New', monospace">STAGE</text>
+<text x="1140" y="178" font-size="18" fill="#23221E" font-weight="bold" text-anchor="end">v2 &#183; ds-star-plus</text>
+<line x1="590.0" y1="194" x2="590.0" y2="854" stroke="#1F1E1B" stroke-width="2.5"/>
+<circle cx="590.0" cy="224.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="209.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="229.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Analyze files</text>
+<line x1="470.0" y1="224.0" x2="497.0" y2="224.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="224.0" x2="710.0" y2="224.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="203" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="229.0" font-size="14.5" fill="#23221E" text-anchor="end">1 model · describer per file</text>
+<rect x="710.0" y="203" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#C2902B" stroke-width="1.6"/>
+<rect x="710.0" y="203" width="6" height="42" rx="3" fill="#C2902B"/>
+<text x="728.0" y="222.0" font-size="14.5" fill="#23221E">describer/file + cached digest</text>
+<text x="728.0" y="239.0" font-size="11.5" fill="#C2902B" font-family="'Courier New', monospace">Haiku</text>
+<circle cx="590.0" cy="284.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="269.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="289.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Retrieve (lake)</text>
+<line x1="470.0" y1="284.0" x2="497.0" y2="284.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="284.0" x2="710.0" y2="284.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="263" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="289.0" font-size="14.5" fill="#23221E" text-anchor="end">top-K by embedding</text>
+<rect x="710.0" y="263" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#C2902B" stroke-width="1.6"/>
+<rect x="710.0" y="263" width="6" height="42" rx="3" fill="#C2902B"/>
+<text x="728.0" y="282.0" font-size="14.5" fill="#23221E">top-150 + relevance pass → K</text>
+<text x="728.0" y="299.0" font-size="11.5" fill="#C2902B" font-family="'Courier New', monospace">Haiku</text>
+<circle cx="590.0" cy="344.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="329.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="349.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Initial step</text>
+<line x1="470.0" y1="344.0" x2="497.0" y2="344.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="344.0" x2="710.0" y2="344.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="323" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="349.0" font-size="14.5" fill="#23221E" text-anchor="end">1 model</text>
+<rect x="710.0" y="323" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#2E6B6A" stroke-width="1.6"/>
+<rect x="710.0" y="323" width="6" height="42" rx="3" fill="#2E6B6A"/>
+<text x="728.0" y="342.0" font-size="14.5" fill="#23221E">plan + code</text>
+<text x="728.0" y="359.0" font-size="11.5" fill="#2E6B6A" font-family="'Courier New', monospace">Haiku→Sonnet</text>
+<circle cx="590.0" cy="404.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="389.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="409.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Implement</text>
+<line x1="470.0" y1="404.0" x2="497.0" y2="404.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="404.0" x2="710.0" y2="404.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="383" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="409.0" font-size="14.5" fill="#23221E" text-anchor="end">full descriptions each round</text>
+<rect x="710.0" y="383" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#2E6B6A" stroke-width="1.6"/>
+<rect x="710.0" y="383" width="6" height="42" rx="3" fill="#2E6B6A"/>
+<text x="728.0" y="402.0" font-size="14.5" fill="#23221E">digests; full only if touched</text>
+<text x="728.0" y="419.0" font-size="11.5" fill="#2E6B6A" font-family="'Courier New', monospace">Sonnet</text>
+<circle cx="590.0" cy="464.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="449.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="469.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Execute</text>
+<line x1="470.0" y1="464.0" x2="497.0" y2="464.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="464.0" x2="710.0" y2="464.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="443" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="469.0" font-size="14.5" fill="#23221E" text-anchor="end">run script</text>
+<rect x="710.0" y="443" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#8B8676" stroke-width="1.6"/>
+<rect x="710.0" y="443" width="6" height="42" rx="3" fill="#8B8676"/>
+<text x="728.0" y="462.0" font-size="14.5" fill="#23221E">run script</text>
+<text x="728.0" y="479.0" font-size="11.5" fill="#8B8676" font-family="'Courier New', monospace">—</text>
+<circle cx="590.0" cy="524.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="509.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="529.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Verify</text>
+<line x1="470.0" y1="524.0" x2="497.0" y2="524.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="524.0" x2="710.0" y2="524.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="503" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="529.0" font-size="14.5" fill="#23221E" text-anchor="end">Yes / No</text>
+<rect x="710.0" y="503" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#9A3B2C" stroke-width="1.6"/>
+<rect x="710.0" y="503" width="6" height="42" rx="3" fill="#9A3B2C"/>
+<text x="728.0" y="522.0" font-size="14.5" fill="#23221E">{sufficient, reason, missing} · 3× vote</text>
+<text x="728.0" y="539.0" font-size="11.5" fill="#9A3B2C" font-family="'Courier New', monospace">Opus</text>
+<circle cx="590.0" cy="584.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="569.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="589.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Route</text>
+<line x1="470.0" y1="584.0" x2="497.0" y2="584.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="584.0" x2="710.0" y2="584.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="563" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="589.0" font-size="14.5" fill="#23221E" text-anchor="end">add / Step l</text>
+<rect x="710.0" y="563" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#2E6B6A" stroke-width="1.6"/>
+<rect x="710.0" y="563" width="6" height="42" rx="3" fill="#2E6B6A"/>
+<text x="728.0" y="582.0" font-size="14.5" fill="#23221E">add / Step l</text>
+<text x="728.0" y="599.0" font-size="11.5" fill="#2E6B6A" font-family="'Courier New', monospace">Sonnet</text>
+<circle cx="590.0" cy="644.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="629.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="649.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Refine</text>
+<line x1="470.0" y1="644.0" x2="497.0" y2="644.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="644.0" x2="710.0" y2="644.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="623" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="649.0" font-size="14.5" fill="#23221E" text-anchor="end">truncate + regenerate</text>
+<rect x="710.0" y="623" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#9A3B2C" stroke-width="1.6"/>
+<rect x="710.0" y="623" width="6" height="42" rx="3" fill="#9A3B2C"/>
+<text x="728.0" y="642.0" font-size="14.5" fill="#23221E">+ anti-repeat · branch on stall</text>
+<text x="728.0" y="659.0" font-size="11.5" fill="#9A3B2C" font-family="'Courier New', monospace">Sonnet→Opus</text>
+<circle cx="590.0" cy="704.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="689.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="709.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Finalize</text>
+<line x1="470.0" y1="704.0" x2="497.0" y2="704.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="704.0" x2="710.0" y2="704.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="683" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="709.0" font-size="14.5" fill="#23221E" text-anchor="end">1 model</text>
+<rect x="710.0" y="683" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#C2902B" stroke-width="1.6"/>
+<rect x="710.0" y="683" width="6" height="42" rx="3" fill="#C2902B"/>
+<text x="728.0" y="702.0" font-size="14.5" fill="#23221E">reformat to spec</text>
+<text x="728.0" y="719.0" font-size="11.5" fill="#C2902B" font-family="'Courier New', monospace">Haiku</text>
+<circle cx="590.0" cy="764.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="749.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="769.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Debug</text>
+<line x1="470.0" y1="764.0" x2="497.0" y2="764.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="764.0" x2="710.0" y2="764.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="743" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="769.0" font-size="14.5" fill="#23221E" text-anchor="end">trace + descriptions</text>
+<rect x="710.0" y="743" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#2E6B6A" stroke-width="1.6"/>
+<rect x="710.0" y="743" width="6" height="42" rx="3" fill="#2E6B6A"/>
+<text x="728.0" y="762.0" font-size="14.5" fill="#23221E">trim → fix (escalates)</text>
+<text x="728.0" y="779.0" font-size="11.5" fill="#2E6B6A" font-family="'Courier New', monospace">Haiku→Sonnet</text>
+<circle cx="590.0" cy="824.0" r="5.5" fill="#1F1E1B"/>
+<rect x="497.0" y="809.0" width="186" height="30" rx="15" fill="#FBF8F1" stroke="#1F1E1B" stroke-width="1.5"/>
+<text x="590.0" y="829.0" font-size="14" fill="#23221E" text-anchor="middle" font-weight="bold">Early exit</text>
+<line x1="470.0" y1="824.0" x2="497.0" y2="824.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<line x1="683.0" y1="824.0" x2="710.0" y2="824.0" stroke="#CFC7B5" stroke-width="1.5"/>
+<rect x="40" y="803" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#CFC7B5" stroke-width="1.2"/>
+<text x="452.0" y="829.0" font-size="14.5" fill="#23221E" text-anchor="end">implicit</text>
+<rect x="710.0" y="803" width="430.0" height="42" rx="7" fill="#FBF8F1" stroke="#8B8676" stroke-width="1.6"/>
+<rect x="710.0" y="803" width="6" height="42" rx="3" fill="#8B8676"/>
+<text x="728.0" y="822.0" font-size="14.5" fill="#23221E">explicit guardrail (1 round)</text>
+<text x="728.0" y="839.0" font-size="11.5" fill="#8B8676" font-family="'Courier New', monospace">—</text>
+<path d="M 36 383 L 26 383 L 26 665 L 36 665" fill="none" stroke="#6F6A5E" stroke-width="1.4"/>
+<text x="30" y="528.0" font-size="11.5" fill="#6F6A5E" text-anchor="start" font-family="'Courier New', monospace" transform="rotate(-90 30 524.0)">loop &#8804; 20 rounds</text>
+<path d="M 1144 383 L 1154 383 L 1154 665 L 1144 665" fill="none" stroke="#6F6A5E" stroke-width="1.4"/>
+<text x="1150" y="528.0" font-size="11.5" fill="#6F6A5E" text-anchor="end" font-family="'Courier New', monospace" transform="rotate(90 1150 524.0)">loop &#8804; 20 rounds</text>
+</svg>

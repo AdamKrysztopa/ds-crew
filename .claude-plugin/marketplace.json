@@ -1,0 +1,33 @@
+{
+  "name": "ds-star",
+  "owner": {
+    "name": "Adam Krysztopa",
+    "email": "krysztopa@gmail.com"
+  },
+  "metadata": {
+    "description": "DS-STAR iterative data-science agent skills for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ds-star",
+      "source": "./",
+      "description": "DS-STAR and DS-STAR+ iterative data-science agent skills. Answers analytical questions over data files by writing and executing Python through a plan → implement → execute → verify → route loop with LLM-as-judge sufficiency checking.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Adam Krysztopa"
+      },
+      "category": "data-science",
+      "keywords": [
+        "data-science",
+        "analytics",
+        "pandas",
+        "csv",
+        "excel",
+        "sqlite",
+        "eda",
+        "ml"
+      ]
+    }
+  ]
+}
