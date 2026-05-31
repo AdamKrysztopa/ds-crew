@@ -50,13 +50,15 @@ number or chart.
 Use `references/report_structure.md`: a 2–3 line executive summary, then 3–7 findings each with its
 number/chart and a one-line "so what", then caveats (data quality, scope, what was NOT examined).
 Generate charts with exact titles and axis labels. Order findings by importance, not by computation
-order.
+order. Produce charts following the quality checklist in `references/visualization.md`. Use whatever plotting library is in the project env — no library is bundled by ds-crew.
 
 ## Output
 
 A readable narrative report (markdown + chart files) where every claim is backed by evidence and the
 caveats are explicit. If a finding raises a precise question worth nailing down, hand it to
 `ds-clarify` → `ds-star-plus`.
+
+Offer the narrative as a Markdown report (and optional self-contained HTML) per `../ds-star-plus/references/export.md`. Write to the run dir alongside any charts.
 
 ## Quick reference
 

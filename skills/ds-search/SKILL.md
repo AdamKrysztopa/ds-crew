@@ -29,6 +29,8 @@ in the suite. Apply it to the hard tail only.
 
 ## How to run it
 
+**Cost guardrail:** MCTS search multiplies solver calls — apply the ensemble cost guardrail before starting. See `../ds-spike/references/cost_guardrails.md`.
+
 1. **Formulate the single hard task clearly** — one well-scoped question, with all relevant
    data files and the desired output format specified.
 2. **Activate search mode** per `../ds-star-plus/references/search_mode.md`. Set:

@@ -1,5 +1,12 @@
 # Data-science skill suite for Claude Code
 
+[![CI](https://github.com/AdamKrysztopa/ds-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/AdamKrysztopa/ds-crew/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2)
+![version](https://img.shields.io/badge/version-1.3.0-informational)
+
+> **Demo:** ![demo recording](docs/demo.svg) *(record once with `docs/demo.md`; SVG not yet generated — see [`docs/STATUS.md`](docs/STATUS.md))*
+
 > **Fourteen installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
 > (Nam et al., 2025) and follow-on research — answering analytical questions over data files by
 > writing and executing Python through an iterative loop that **never trusts code just because it
@@ -76,6 +83,8 @@ claude plugin uninstall ds-crew@ds-crew
 
 ## The fourteen skills
 
+**New here?** Start with a [config profile](docs/profiles.md) or run `/ds-conduct` — it inspects your data and routes automatically. See [docs/USAGE.md](docs/USAGE.md) for the full chooser.
+
 | skill | what it does | reach for it when |
 |-------|--------------|-------------------|
 | **`ds-star`** | Baseline iterative solver — analyze files → grow a verified plan one step at a time | reproducing the paper; a simple, single-model baseline |
@@ -93,7 +102,9 @@ claude plugin uninstall ds-crew@ds-crew
 | **`ds-memory`** | Persistent recipe store — remember and reuse what worked across sessions | Inspect/prune past analyses; seed new runs from history |
 | **`ds-env-setup`** | Set up / verify the Python env — detects uv/venv/conda/poetry/pipenv, installs core packages, offers a SessionStart hook | Before first analysis; after changing env; `ImportError` during a run |
 
-> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)**
+> **Advanced primitives** (`ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`, `ds-memory`): invoke directly only when you have a specific need — checking an answer, reconciling existing results, or inspecting the memory store. Most users start at `/ds-conduct`.
+
+> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)** · [Config profiles](docs/profiles.md) · [Demo datasets](docs/datasets.md)
 
 **Typical flow for something important:** `ds-conduct` (orchestrates the whole crew) → `data-profile` → `ds-clarify` → `ds-spike` (ensemble) → reconciled answer. See [docs/USAGE.md](docs/USAGE.md) for all routing options.
 
@@ -211,7 +222,9 @@ provides checkable test cases.
 
 ## Status
 
-All tracks A–M are implemented. Tracks A–D delivered the rubric-graded verifier (DeepVerifier-style),
+All tracks A–M are **implemented**; **validation against external benchmarks is pending** (see [`docs/STATUS.md`](docs/STATUS.md)). Skills with passing unit/eval test suites are marked 🟡; the rest await the Phase 1 external benchmark. Benchmark plan and the open ds-spike-vs-verifier question: [`skills/ds-star-plus/references/benchmark.md`](skills/ds-star-plus/references/benchmark.md).
+
+Tracks A–D delivered the rubric-graded verifier (DeepVerifier-style),
 the human-in-the-loop `ds-clarify`, the capstone `ds-spike` ensemble (blackboard reconciliation),
 `data-profile`, `eda-narrative`, and `ds-star-plus`'s optional MCTS search mode + upgraded retrieval.
 Tracks E–M (v1.2) add persistent memory (`ds-memory`), stateful kernel execution, DAG planning,

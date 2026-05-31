@@ -81,3 +81,33 @@ for how the *current* `plus` design is grounded in the DS-STAR paper.
 | **Improving Factuality and Reasoning in Language Models through Multiagent Debate** — Yilun Du et al. (MIT / CMU, 2023) | [2305.14325](https://arxiv.org/abs/2305.14325) | **Track I — debate for correctness.** Multiple LLM agents propose and critique answers across rounds, converging to more factual responses; grounds the debate / cross-checking layer in the ds-spike ensemble. |
 | **MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework** — Sirui Hong et al. (2023) | [2308.00352](https://arxiv.org/abs/2308.00352) | **Track K — role-based SOP agents.** Encodes human SOPs as agent roles with structured message passing; reference for assigning distinct analyst roles (data engineer, modeller, critic) within the ds-crew ensemble. |
 | **Self-Consistency Improves Chain of Thought Reasoning in Language Models** — Xuezhi Wang et al. (Google Brain, 2022) | [2203.11171](https://arxiv.org/abs/2203.11171) | **Track L — majority-vote sampling.** Samples diverse reasoning paths and marginalises over answers via majority vote; the theoretical basis for the ensemble-voting and answer-aggregation step in ds-spike / ds-star-plus. |
+
+---
+
+## Citation audit (Phase 0, 2026-05-31)
+
+All 21 arXiv IDs verified by fetching each abstract page (`scripts/verify_citations.py --online`).
+
+| arXiv | status | note |
+|-------|--------|------|
+| 2509.21825 | ✅ OK | |
+| 2410.07331 | ✅ OK | |
+| 2506.23719 | ✅ OK | |
+| 2506.06541 | ✅ OK | |
+| 2502.14693 | ✅ OK | |
+| 2601.15808 | ✅ OK | |
+| 2602.04248 | ✅ OK | |
+| 2602.02995 | ✅ OK | |
+| 2410.20285 | ✅ OK | |
+| 2510.01285 | ✅ OK | |
+| 2409.07429 | ✅ OK | |
+| 2305.16291 | ✅ OK | |
+| 2308.10144 | ✅ OK | |
+| 2402.01030 | ✅ OK | |
+| 2402.18679 | ✅ OK | |
+| 2502.13138 | ✅ OK | |
+| 2410.20424 | ✅ OK | |
+| 2410.02958 | ✅ OK | |
+| 2305.14325 | ✅ OK | |
+| 2308.00352 | ✅ OK | |
+| 2203.11171 | ✅ OK | |

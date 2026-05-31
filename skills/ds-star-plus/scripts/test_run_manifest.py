@@ -23,5 +23,31 @@ class TestRunManifest(unittest.TestCase):
             self.assertTrue(os.path.exists(p))
             self.assertEqual(json.load(open(p))["question"], "q")
 
+    def test_build_manifest_records_usage_fields(self):
+        m = build_manifest(
+            question="q", code="print(1)", inputs=[], answer="1",
+            verdict={"score": 4}, model="claude-sonnet-4-6",
+            usage={"input_tokens": 1000, "output_tokens": 200},
+            latency_s=3.5,
+        )
+        self.assertEqual(m["usage"]["input_tokens"], 1000)
+        self.assertEqual(m["usage"]["output_tokens"], 200)
+        self.assertAlmostEqual(m["latency_s"], 3.5)
+        self.assertIn("cost_usd", m)
+        self.assertGreater(m["cost_usd"], 0)
+
+    def test_usage_optional_back_compat(self):
+        m = build_manifest("q", "c", [], "1", {}, "m")   # old 6-arg signature
+        self.assertEqual(m["usage"], {})
+        self.assertIsNone(m["latency_s"])
+        self.assertEqual(m["cost_usd"], 0.0)
+
+    def test_cost_uses_model_tier_rates(self):
+        from run_manifest import estimate_cost
+        c = estimate_cost("claude-haiku-4-5", {"input_tokens": 1_000_000, "output_tokens": 0})
+        self.assertGreater(c, 0)
+        c_opus = estimate_cost("claude-opus-4-8", {"input_tokens": 1_000_000, "output_tokens": 0})
+        self.assertGreater(c_opus, c)
+
 if __name__ == "__main__":
     unittest.main()

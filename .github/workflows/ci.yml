@@ -1,0 +1,27 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run all skill unittest suites
+        run: |
+          fail=0
+          for d in skills/*/scripts scripts .github/workflows/scripts; do
+            if ls "$d"/test_*.py >/dev/null 2>&1; then
+              echo "== $d =="
+              (cd "$d" && python3 -m unittest -v) || fail=1
+            fi
+          done
+          exit $fail
+      - name: Lint SKILL.md frontmatter
+        run: python3 .github/workflows/scripts/lint_frontmatter.py
+      - name: Validate manifests
+        run: python3 .github/workflows/scripts/validate_manifests.py
