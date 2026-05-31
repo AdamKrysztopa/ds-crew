@@ -3,7 +3,7 @@
 [![CI](https://github.com/AdamKrysztopa/ds-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/AdamKrysztopa/ds-crew/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2)
-![version](https://img.shields.io/badge/version-1.2.1-informational)
+![version](https://img.shields.io/badge/version-1.3.0-informational)
 
 > **Demo:** ![demo recording](docs/demo.svg) *(record once with `docs/demo.md`; SVG not yet generated — see [`docs/STATUS.md`](docs/STATUS.md))*
 
