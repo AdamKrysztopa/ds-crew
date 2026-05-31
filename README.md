@@ -121,6 +121,9 @@ ds-stats-with-claude/
 │   ├── plugin.json                 plugin manifest
 │   └── marketplace.json            marketplace manifest
 ├── ARCHITECTURE.md                 v1 vs v2 side-by-side
+├── ROADMAP.md                      planned plus-improvements + new skills
+├── papers/
+│   └── README.md                   bibliography (PDFs gitignored, re-fetchable)
 ├── architecture-comparison.svg     mirrored diagram
 └── make_diagram.py                 regenerate the SVG
 ```
@@ -139,3 +142,10 @@ analyzer/router ablations (Table 4, e.g. hard accuracy 45.24 → 26.98 without d
 ~8-point retrieval-vs-oracle gap (Table 2), and the round distribution (§4.3). The full evidence
 chain is in `skills/ds-star-plus/references/evidence.md`; `skills/ds-star-plus/evals/evals.json`
 provides checkable test cases.
+
+## What's next
+
+This repo is growing from "a DS-STAR implementation" into a suite of recent data-science skills.
+The planned work — a rubric-guided verifier upgrade (DeepVerifier), an optional MCTS search mode,
+and a human-in-the-loop `ds-clarify` skill — is laid out in [`ROADMAP.md`](ROADMAP.md), each item
+tied to a paper in the bibliography at [`papers/README.md`](papers/README.md).

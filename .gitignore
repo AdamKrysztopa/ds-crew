@@ -1,4 +1,6 @@
 .DS_Store
 **/.DS_Store
 .claude/settings.local.json
-paper/
+
+# Reference papers: keep the index (papers/README.md) in git, but not the large PDFs
+papers/*.pdf
