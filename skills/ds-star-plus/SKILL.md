@@ -161,6 +161,7 @@ Paper-grounded justification for every v2 change (tables + numbers): `references
 Upgraded role prompts (structured verifier, anti-repeat planner): `references/prompts.md`.
 Verifier rubric (the six DS failure modes): `references/rubric.md`.
 Optional MCTS search mode for hard tasks: `references/search_mode.md`.
+Data-lake retrieval policy (two-stage + column matching): `references/retrieval.md`.
 Worked trace with backtracking: `references/worked_example.md`.
 Routing helper: `scripts/route_model.py`. File describer: `scripts/analyze_file.py`.
 Verdict validator: `scripts/verify_schema.py`. Test cases: `evals/evals.json`.
