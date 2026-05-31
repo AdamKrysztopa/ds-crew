@@ -4,3 +4,5 @@
 
 # Reference papers: keep the index (papers/README.md) in git, but not the large PDFs
 papers/*.pdf
+
+local_tests/
