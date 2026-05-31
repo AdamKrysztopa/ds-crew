@@ -87,6 +87,7 @@ def aggregate(results, rel_tol=1e-3):
         "support": [m["id"] for m in top["members"]],
         "n_solvers": len(results),
         "n_clusters": len(clusters),
+        "n_revised": sum(1 for r in results if r.get("revised")),
         "unanimous": len(clusters) == 1,
         "minority_report": minority,
     }

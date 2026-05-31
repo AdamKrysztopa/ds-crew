@@ -75,6 +75,20 @@ class AggregateTests(unittest.TestCase):
         clusters = cluster_results([rec("a", 1.0), rec("b", 2.0), rec("c", 1.0)])
         self.assertEqual(len(clusters), 2)
 
+    def test_aggregate_tracks_debate_revisions(self):
+        recs = [
+            {"id":"s1","answer":41.7,"sufficient":True,"assumptions":[],"revised":False},
+            {"id":"s2","answer":41.7,"sufficient":True,"assumptions":[],"revised":True},
+            {"id":"s3","answer":39.4,"sufficient":True,"assumptions":[],"revised":False},
+        ]
+        out = aggregate(recs)
+        self.assertEqual(out["answer"], 41.7)
+        self.assertEqual(out["n_revised"], 1)
+
+    def test_aggregate_n_revised_defaults_zero_without_debate(self):
+        out = aggregate([{"id":"s1","answer":1,"sufficient":True}])
+        self.assertEqual(out["n_revised"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
