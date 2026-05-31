@@ -1,7 +1,7 @@
 # DS-STAR skill suite for Claude Code
 
 > **Two installable Claude Code skills** that implement the DS-STAR data-science agent
-> (Nam et al., 2026) — answering analytical questions over data files by writing and
+> (Nam et al., 2025) — answering analytical questions over data files by writing and
 > executing Python through an iterative loop that **never trusts code just because it ran**.
 
 ---
@@ -111,6 +111,7 @@ ds-stats-with-claude/
 │       │   └── evals.json          checkable test cases
 │       ├── references/
 │       │   ├── model_routing.md    Opus/Sonnet/Haiku routing policy
+│       │   ├── evidence.md         paper-grounded "why" for every v2 change
 │       │   ├── prompts.md          upgraded prompts (structured verifier)
 │       │   └── worked_example.md   annotated trace with backtracking
 │       └── scripts/
@@ -128,8 +129,13 @@ ds-stats-with-claude/
 
 ## Reference
 
-Nam et al. (2026). *DS-STAR: Data Science Agent for Solving Diverse Tasks across
-Heterogeneous Formats and Open-Ended Questions.*
-The v2 additions (model routing, structured verifier, oscillation handling, digest caching)
-are design extensions — principled but independently unbenchmarked.
-`skills/ds-star-plus/evals/evals.json` provides checkable test cases.
+Nam, Yoon, Chen & Pfister (2025). *DS-STAR: Data Science Agent via Iterative Planning and
+Verification.* arXiv:2509.21825. Google Cloud / KAIST.
+
+The v2 additions (model routing, structured verifier, oscillation handling, digest caching,
+two-stage retrieval) are design extensions: there is no new independent benchmark, but each is
+justified against a specific finding in the paper — the 3.5× input-token cost (Table 6), the
+analyzer/router ablations (Table 4, e.g. hard accuracy 45.24 → 26.98 without descriptions), the
+~8-point retrieval-vs-oracle gap (Table 2), and the round distribution (§4.3). The full evidence
+chain is in `skills/ds-star-plus/references/evidence.md`; `skills/ds-star-plus/evals/evals.json`
+provides checkable test cases.

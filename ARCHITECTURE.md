@@ -62,3 +62,11 @@ default tier  --1 failed attempt-->  +1 tier  --still failing-->  Opus
 
 Drop back to the default tier once a sub-goal succeeds — escalation is per sub-goal, not
 sticky for the whole task.
+
+## Why these asymmetries hold (paper evidence)
+
+Both asymmetries above are grounded in the paper, not asserted: the cost asymmetry in Table 6
+(154,669 input tokens / $0.23 per task, 3.5× ReAct) and the correctness asymmetry in the Table 4
+ablations (removing descriptions: hard 45.24 → 26.98; removing the router: 45.24 → 39.95). The
+full mapping from each v2 change to its supporting table/number is in
+`skills/ds-star-plus/references/evidence.md`.

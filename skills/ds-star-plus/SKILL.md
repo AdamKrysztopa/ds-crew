@@ -13,7 +13,9 @@ cut the ~3.5x token overhead. If you have not seen the base method, the same six
 `../ds-star/SKILL.md` apply; this file describes only what changes and why.
 
 Read `references/model_routing.md` for the full routing policy and `references/prompts.md`
-for the upgraded role prompts. A worked trace is in `references/worked_example.md`.
+for the upgraded role prompts. A worked trace is in `references/worked_example.md`. Every change
+below is justified against specific paper findings (tables, numbers) in `references/evidence.md` —
+read that for the full "why this and not something else."
 
 ## The cardinal rule (unchanged)
 
@@ -48,6 +50,13 @@ Rule of thumb: **spend on judgment, save on plumbing.** The verifier is the one 
 cheap model is a false economy — a wrong "sufficient" is unrecoverable, so it runs on Opus by
 default. Everything that merely transforms text or writes boilerplate starts on Haiku.
 
+*Why this is safe (paper-grounded):* the paper runs every role on one model, but its own ablation
+(Table 4) shows the roles are not equally load-bearing — only the **analyzer** (remove it → hard
+accuracy 45.24 → 26.98) and **router** (remove it → 45.24 → 39.95) decisively move accuracy, while
+the analyzer also has the highest call volume (one parallel call per file, Algorithm 1). Routing by
+load attacks the $0.23 / 12.7-call / 154,669-input-token profile in Table 6 without touching what
+Table 4 proved is critical. See `references/evidence.md` §1.
+
 `scripts/route_model.py` encodes this table: call
 `pick_model(role, attempt=N, oscillating=False, hard=False)` to get the model id to use for a
 given role and situation, so routing is consistent rather than ad hoc.
@@ -66,11 +75,21 @@ line), and `missing` (a list of what still needs to happen if not sufficient). T
 For high-stakes or borderline answers, run the verifier **3x and take majority** (self-
 consistency). Cheap insurance on the one decision that can silently end the run wrong.
 
+*Why:* the paper's verifier is strictly binary (§3.2: `v ∈ {sufficient, insufficient}`) and the loop
+terminates the instant it says "sufficient" (Algorithm 1), so a false "sufficient" is unrecoverable —
+this is the exact silent-wrong-answer failure of Figure 3. Self-consistency is the paper's own
+recommended hardening for high-stakes multi-step pipelines (cited in the Text-to-SQL related work,
+§2); v2 spends it only on the verdict that can end the run wrong. See `references/evidence.md` §2.
+
 ### 3. Oscillation and escalation handling
 
 Backtracking can loop: the router removes step 3, the planner proposes a near-identical step
-3, it fails again. v2 tracks, per task, a short **anti-repeat list** of step descriptions that
-were already flagged wrong. When the planner is about to regenerate a truncated step:
+3, it fails again. This is the paper's own diagnosis — in-place revision yields "an overly complex
+replacement, therefore frequently flagged again by the router in a next iteration" (§3.2) — except
+random resampling with no memory can re-derive the *same* bad step. The paper runs to a 20-round cap
+and Fig 4b shows accuracy still rising at the cap, i.e. some tasks burn the whole budget spinning.
+v2 tracks, per task, a short **anti-repeat list** of step descriptions that were already flagged
+wrong. When the planner is about to regenerate a truncated step:
 
 - Pass the anti-repeat list so it must propose a *materially different* approach.
 - If the same step index has been truncated **twice**, set `oscillating=True` → escalate
@@ -81,20 +100,29 @@ were already flagged wrong. When the planner is about to regenerate a truncated 
 ### 4. Context caching to cut token cost
 
 v1 re-feeds every full file description into every role on every round (the main reason it
-uses ~3.5x ReAct's input tokens). v2 keeps a compact **schema digest** per file (name, column
-names + dtypes, sheet names, a 1-line summary) and passes only that by default. Pass the full
-verbose description only (a) to the coder/debugger when it touches that specific file, or (b)
-when a role explicitly asks for it. Cache digests and descriptions for the task so they are
-computed once. Expect meaningful token savings on multi-file tasks with no accuracy loss,
-because planning rarely needs the full head-dump — it needs the schema.
+uses ~3.5x ReAct's input tokens — Table 6: 154,669 vs 44,691 input tokens, a cost the paper
+blames squarely on "comprehensive analytic descriptions of each data file"). v2 keeps a compact
+**schema digest** per file (name, column names + dtypes, sheet names, a 1-line summary) and passes
+only that by default. Pass the full verbose description only (a) to the coder/debugger when it
+touches that specific file, or (b) when a role explicitly asks for it. Cache digests and
+descriptions for the task so they are computed once. Expect meaningful token savings on multi-file
+tasks with no accuracy loss, because planning rarely needs the full head-dump — it needs the schema.
+
+**The non-negotiable constraint here:** the description is *also* the biggest correctness lever in
+the whole method — Table 4 shows removing it collapses hard accuracy 45.24 → 26.98. So the cost
+driver and the correctness driver are the same object. v2 therefore *compresses* the description
+(digest by default), it never *deletes* it: the full description still reaches the coder/debugger at
+the exact point Table 4's signal is consumed. "Send less data context" without this rule would walk
+into an 18-point accuracy cliff. See `references/evidence.md` §4.
 
 ### 5. Smarter retrieval for data lakes (>100 files)
 
-v1's top-K-by-embedding leaves accuracy on the table (the paper's oracle setting beat it by
-~8 points). v2 uses two cheap stages: (a) embed query vs file digests, take top ~150; (b) a
-Haiku relevance pass that keeps only files plausibly needed for *this* query, down to ~top-K.
-The relevance pass is cheap and recovers files that embed poorly but are clearly on-topic by
-name/columns.
+v1's top-K-by-embedding leaves accuracy on the table — on KramaBench (Table 2) the oracle setting
+(relevant files handed in) scores 52.55 vs 44.69 with retrieval, a ~8-point gap the paper itself
+flags as "advanced data discovery... a promising direction." v2 uses two cheap stages: (a) embed
+query vs file digests, take top ~150; (b) a Haiku relevance pass that keeps only files plausibly
+needed for *this* query, down to ~top-K. The relevance pass is cheap and recovers files that embed
+poorly but are clearly on-topic by name/columns. See `references/evidence.md` §5.
 
 ---
 
@@ -115,14 +143,17 @@ name/columns.
 
 ## Early-exit guardrail (cost)
 
-Easy tasks often finish in one round; the paper shows >50% of easy tasks are solved by the
-initial plan. Do not burn rounds proving the obvious: if the initial result already cleanly
-answers the question and the verifier's `reason` ties output to the question with no `missing`
-items, finalize immediately. Reserve the heavy loop for genuinely multi-step / multi-file work.
+Easy tasks often finish in one round; the paper (§4.3, Fig 4) shows easy tasks average 3.0 rounds
+with >50% solved by the initial plan p₀ alone, while hard tasks average 5.6 rounds and 98% need at
+least one refinement. The distribution is bimodal, so do not burn rounds proving the obvious: if the
+initial result already cleanly answers the question and the verifier's `reason` ties output to the
+question with no `missing` items, finalize immediately. Reserve the heavy loop for the iterative tail
+where the paper shows it pays. See `references/evidence.md` §6.
 
 ## Quick reference
 
 Routing policy + model ids: `references/model_routing.md`.
+Paper-grounded justification for every v2 change (tables + numbers): `references/evidence.md`.
 Upgraded role prompts (structured verifier, anti-repeat planner): `references/prompts.md`.
 Worked trace with backtracking: `references/worked_example.md`.
 Routing helper: `scripts/route_model.py`. File describer: `scripts/analyze_file.py`.

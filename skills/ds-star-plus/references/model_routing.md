@@ -44,11 +44,16 @@ Escalate one tier at a time and only on evidence:
 
 ## Budget intuition
 
-The base method's cost is dominated by re-feeding full descriptions to every role each round.
-v2 attacks this from two sides: (a) routing the high-call-volume roles to Haiku, and (b)
+The base method's cost is dominated by re-feeding full descriptions to every role each round
+(Table 6: 154,669 input tokens, 12.7 LLM calls, $0.23/task on DABStep — 3.5x ReAct's 44,691
+input tokens, a bill the paper attributes to "comprehensive analytic descriptions of each data
+file"). v2 attacks this from two sides: (a) routing the high-call-volume roles to Haiku, and (b)
 passing compact schema digests instead of full descriptions except where a role touches a
-specific file. Together these target the input-token bloat that made v1 ~3.5x ReAct's input
-tokens, while keeping Opus exactly where correctness depends on it.
+specific file. Together these target that input-token bloat while keeping Opus exactly where
+correctness depends on it. Critically, the descriptions are also the #1 correctness lever
+(Table 4 ablation: removing them drops hard accuracy 45.24 → 26.98), so v2 compresses them into
+digests rather than dropping them — the full description still reaches any role that touches the
+file. Full evidence chain: `evidence.md`.
 
 ## When to ignore routing and just use one strong model
 
