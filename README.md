@@ -211,7 +211,9 @@ provides checkable test cases.
 
 ## Status
 
-All tracks A–M are implemented. Tracks A–D delivered the rubric-graded verifier (DeepVerifier-style),
+All tracks A–M are **implemented**; **validation against external benchmarks is pending** (see [`docs/STATUS.md`](docs/STATUS.md)). Skills with passing unit/eval test suites are marked 🟡; the rest await the Phase 1 external benchmark. The benchmark plan and the open ds-spike-vs-verifier question are documented in `skills/ds-star-plus/references/benchmark.md`.
+
+Tracks A–D delivered the rubric-graded verifier (DeepVerifier-style),
 the human-in-the-loop `ds-clarify`, the capstone `ds-spike` ensemble (blackboard reconciliation),
 `data-profile`, `eda-narrative`, and `ds-star-plus`'s optional MCTS search mode + upgraded retrieval.
 Tracks E–M (v1.2) add persistent memory (`ds-memory`), stateful kernel execution, DAG planning,
