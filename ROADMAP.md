@@ -11,10 +11,14 @@ cost-hardened successor (`ds-star-plus`). This document plans the tracks below:
 Every item is tied to a source in [`papers/`](papers/README.md). Status legend:
 🟢 ready to build · 🟡 needs a design decision · ⚪ exploratory · ✅ **implemented**.
 
-> **Implementation status (2026-05-31): all tracks shipped.** A1 ✅ (rubric verifier + tests),
+> **Implementation status (2026-05-31): all tracks A–M shipped.** A1 ✅ (rubric verifier + tests),
 > A2 ✅ (`references/search_mode.md`), A3 ✅ (`references/retrieval.md`), B1 ✅ (`ds-clarify`),
 > B2 ✅ (`data-profile`), B3 ✅ (`eda-narrative`), D ✅ (`ds-spike` + tested aggregator),
-> C ✅ (suite framing in README + manifests, v1.1.0). The sections below are kept as the design
+> C ✅ (suite framing in README + manifests, v1.1.0). **Tracks E–M ✅ (v1.2):** E ✅ (`ds-memory`),
+> F ✅ (stateful kernel execution), G ✅ (DAG planning + replan), H ✅ (`ds-model`),
+> I ✅ (debate mode in `ds-spike`), J ✅ (sandbox + provenance), K ✅ (`ds-conduct`),
+> L ✅ (standalone primitives: `ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`),
+> M ✅ (`docs/USAGE.md` routing guide). The sections below are kept as the design
 > rationale and the record of *why* each was built the way it was.
 
 ---
@@ -185,6 +189,46 @@ data-science skills** (autonomous solving, human-in-the-loop clarification, prof
 
 ---
 
+## Tracks E–M — SOTA agentic patterns (v1.2)
+
+### Track E ✅ `ds-memory` — persistent cross-session recipe library
+
+Persistent cross-session skill/workflow library (AWM [2409.07429](https://arxiv.org/abs/2409.07429), Voyager [2305.16291](https://arxiv.org/abs/2305.16291), ExpeL [2308.10144](https://arxiv.org/abs/2308.10144)). Append-only JSONL store of verified recipes, retrieved by `task_signature` + data fingerprint. Opt-in hooks in `ds-star-plus` (PLAN seeding + FINALIZE recording) and `ds-spike` (minority-report seeding). Files: `skills/ds-memory/SKILL.md`, `references/store_format.md`, `scripts/memory_store.py`.
+
+### Track F ✅ Stateful kernel execution
+
+Optional persistent IPython kernel for `ds-star-plus` (CodeAct [2402.01030](https://arxiv.org/abs/2402.01030)). Kernel binds to `sys.executable` for venv/uv safety. Script mode remains the default; kernel is opt-in via `references/execution.md`. New scripts: `scripts/kernel_runner.py`. Enables incremental computation without re-running full scripts each round.
+
+### Track G ✅ DAG planning + dynamic replan
+
+Plan represented as a task graph with node-level verify and descendant-only replan on failure (Data Interpreter [2402.18679](https://arxiv.org/abs/2402.18679)). Linear chain is the default; escalates to DAG for multi-file/multi-output tasks. Files: `skills/ds-star-plus/references/planning_graph.md`. Reduces wasted work by replanning only the affected subtree, not the whole pipeline.
+
+### Track H ✅ `ds-model` — AutoML solution-tree skill
+
+AIDE-style draft→train→eval→expand loop (AIDE [2502.13138](https://arxiv.org/abs/2502.13138), AutoKaggle [2410.20424](https://arxiv.org/abs/2410.20424), AutoML-Agent [2410.02958](https://arxiv.org/abs/2410.02958)) with `leaderboard.py` and explicit leakage/CV discipline. Files: `skills/ds-model/SKILL.md`, `references/{solution_tree,leakage_cv,evidence}.md`, `scripts/leaderboard.py`, `evals/evals.json`. The solution tree explores the ML design space systematically rather than greedily committing to the first model tried.
+
+### Track I ✅ Debate mode in `ds-spike`
+
+Optional ≤2-round cross-critique before aggregation (Du et al. [2305.14325](https://arxiv.org/abs/2305.14325)). Anti-herding guard preserves minority report. `n_revised` field added to `aggregate()`. Opt-in via `debate: true` flag. Files: `skills/ds-spike/references/debate.md`. Debate improves answer quality on contested tasks without forcing consensus on genuine disagreements.
+
+### Track J ✅ Sandbox + provenance
+
+`run_manifest.py` emits a reproducibility manifest per run (code SHA-256, inputs, verdict, UTC timestamp). Shared `sandbox.md` reference enforces working-dir discipline and no-network default. Files: `skills/ds-star-plus/references/sandbox.md`, `scripts/run_manifest.py`. Every run is now auditable: given the manifest, any result can be re-derived from the same inputs.
+
+### Track K ✅ `ds-conduct` — data-aware orchestrator capstone
+
+Data-aware orchestrator capstone (blackboard control-agent [2510.01285](https://arxiv.org/abs/2510.01285), MetaGPT supervisor [2308.00352](https://arxiv.org/abs/2308.00352)). 4-stage flow: Peek → Grill data-aware → Assemble plan → Confirm + execute with checkpoints. Trigger catalog maps 10 data patterns to questions and skills. Files: `skills/ds-conduct/SKILL.md`, `references/{trigger_catalog,workflow_plan_template,evidence}.md`. `ds-conduct` is the recommended entry point for users who don't know which skill to invoke.
+
+### Track L ✅ Standalone primitives
+
+Five thin skills exposing embedded building blocks: `ds-verify` (rubric verifier), `ds-reconcile` (blackboard aggregation), `ds-vote` (self-consistency [2203.11171](https://arxiv.org/abs/2203.11171)), `ds-search` (MCTS search mode), `ds-route` promoted to `routing.md` utility. Each is a SKILL.md-only skill wrapping logic that was already embedded in `ds-star-plus` or `ds-spike`. Promotes composability: any external tool can pipe results through `ds-verify` or `ds-reconcile` independently.
+
+### Track M ✅ Usage guide
+
+`docs/USAGE.md`: decision table for all 13 skills, ASCII decision flowchart, 5 canonical pipelines. Closes the "which skill do I use?" gap that grows as the suite scales. Links prominently from the README skill table.
+
+---
+
 ## Suggested order
 
 1. **A1** (rubric verifier) — biggest reliability win, smallest blast radius, cost-aligned. *No blockers.*
@@ -200,6 +244,9 @@ A1 (rubric verifier) ─┐
                       ├─► D (ds-spike ensemble) ─► C (repo rename)
 B1 (ds-clarify) ──────┘
 A2 (MCTS) ── independent, opt-in, later
+
+Tracks E–M dependency order:
+J → F → G → E → H → I → L → K → M
 ```
 
 ## When can we start to implement "all"?
