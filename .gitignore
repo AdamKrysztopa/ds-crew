@@ -6,3 +6,6 @@
 papers/*.pdf
 
 local_tests/
+
+# Dataset downloads (never commit raw data)
+data/
