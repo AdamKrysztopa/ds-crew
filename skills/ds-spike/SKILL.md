@@ -59,6 +59,27 @@ Execution policy + provenance: see `../ds-star-plus/references/sandbox.md`.
 Each solver posts a record: `{id, answer, sufficient, final_code, key_assumptions}`. Keep them
 side by side — this shared board is the [2510.01285] post-and-collect pattern.
 
+### Stage 3.5 — Debate (opt-in, flag: `debate: true`)
+
+**Default: disabled. One-shot mode is the default.**
+
+When `debate: true` is passed, run up to 2 structured debate rounds after Stage 3 before
+proceeding to Stage 4. Full protocol: `references/debate.md`.
+
+**2-round protocol:**
+Each solver receives all peer answers and rationales, then may revise its answer. If it revises,
+its record is updated with `revised: true` (tracked by `aggregate()` as `n_revised`). After ≤2
+rounds — or as soon as a round produces no revisions — the final post-debate answers proceed to
+Stage 4.
+
+**Anti-herding guard:** Debate can amplify a confident-wrong majority. Solvers that did NOT revise
+keep their original answer in the minority report regardless of peer pressure. The minority report
+always reflects the post-debate dissent, not just pre-debate disagreement.
+
+**Cost:** Adds ≤2 extra LLM rounds per solver (e.g. N=3 → up to 6 extra calls). Reserve for
+cases where iterative convergence is worth the cost. See `references/debate.md` for the full
+protocol and the Du et al. 2305.14325 citation.
+
 ### Stage 4 — Reconcile (Opus lead)
 
 Feed the records to `scripts/aggregate.py` (`aggregate(results)`), which clusters answers (numeric
@@ -88,3 +109,4 @@ Diversity axes for the solvers: `references/personas.md`.
 Clustering + consensus + minority-report rules: `references/aggregation.md`.
 Aggregator: `scripts/aggregate.py` (tests: `scripts/test_aggregate.py`).
 Why a panel beats one run (blackboard + best-of-N evidence): `references/evidence.md`.
+Opt-in debate protocol (Du et al. 2305.14325): `references/debate.md`.
