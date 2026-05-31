@@ -5,6 +5,8 @@
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2)
 ![version](https://img.shields.io/badge/version-1.2.1-informational)
 
+> **Demo:** ![demo recording](docs/demo.svg) *(record once with `docs/demo.md`; SVG not yet generated — see [`docs/STATUS.md`](docs/STATUS.md))*
+
 > **Fourteen installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
 > (Nam et al., 2025) and follow-on research — answering analytical questions over data files by
 > writing and executing Python through an iterative loop that **never trusts code just because it
