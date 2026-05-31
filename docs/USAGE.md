@@ -5,6 +5,25 @@ Three parts: decision table, ASCII flowchart, canonical pipelines.
 
 ---
 
+## Start here
+
+Two ways in:
+
+1. **Pick a profile** — [`docs/profiles.md`](profiles.md) bundles skill + model + ensemble into three presets (`quick`, `exploratory`, `production-audit`). Pick the one that matches your use case.
+2. **Run `/ds-conduct`** — the recommended front door for any fuzzy request or new dataset. It peeks at your data, asks targeted questions, and routes to the right skills automatically. The default solver behind it is `ds-star-plus`, which falls back to `ds-star`/`ds-search` as needed.
+
+## Config profiles
+
+See [`docs/profiles.md`](profiles.md) for the full reference. Summary:
+
+| profile | when |
+|---|---|
+| `quick` | Fast factoid over a clean file, low stakes |
+| `exploratory` | New/unknown data, want a narrative |
+| `production-audit` | High stakes, contested, must defend the number |
+
+---
+
 ## Part 1 — Decision Table
 
 | Skill | What it does | Reach for it when | Relative cost |
@@ -22,6 +41,8 @@ Three parts: decision table, ASCII flowchart, canonical pipelines.
 | `ds-reconcile` | Clusters multiple candidate answers by agreement, weights verified ones higher, returns consensus + confidence + minority report | You already have multiple candidate answers (from different runs, analysts, or tools) and need them merged | `$` |
 | `ds-vote` | Runs the same solver N times independently and tallies votes across results | You want a stability or stochasticity check — does the same question reliably produce the same answer? | `$$$` |
 | `ds-memory` | Persistent cross-session recipe store: inspect past analyses, prune stale entries, or retrieve prior solutions to seed new planners | You want to reuse a past analysis, check what has been solved before, or recall which approach worked | `$` |
+
+> **Advanced primitives:** `ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`, and `ds-memory` are advanced sub-capabilities. Most users start at `ds-conduct` or pick a profile. Reach for these only when you already have an answer to check, results to reconcile, or a specific need not served by the front-door workflow.
 
 ---
 
