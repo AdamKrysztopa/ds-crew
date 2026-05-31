@@ -133,6 +133,7 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
 
 1. **Analyze** every file (Haiku, parallel) → keep both a verbose description and a schema
    digest. Cache both. Retrieve/trim if it is a data lake.
+   If the input is a PDF or image, handle via native vision per `references/multimodal.md` — no extra library needed.
 2. **Initialize** with one simple executable step (Haiku planner → Sonnet coder) and run it.
    For multi-file joins or multiple independent outputs, represent the plan as a DAG (see `references/planning_graph.md`); linear chain is the default for simple tasks.
    **Memory (opt-in):** If `./.ds-crew-memory/recipes.jsonl` exists, call `retrieve(store, task_signature(question), data_fingerprint)` to seed the planner with matching recipes as *suggestions* (never blindly trusted — the verifier still gates every step).
