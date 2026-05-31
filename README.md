@@ -1,6 +1,6 @@
 # Data-science skill suite for Claude Code
 
-> **Six installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
+> **Thirteen installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
 > (Nam et al., 2025) and follow-on research — answering analytical questions over data files by
 > writing and executing Python through an iterative loop that **never trusts code just because it
 > ran**, plus clarification, ensembling, profiling, and exploration skills around it.
@@ -48,6 +48,13 @@ Invoke explicitly in any Claude Code session:
 /ds-spike         # ensemble: N data scientists in parallel → consensus + minority report
 /data-profile     # standalone data-quality / profiling report
 /eda-narrative    # exploration → stakeholder-ready narrative
+/ds-conduct       # data-aware orchestrator: peeks at data, grills, assembles + executes crew workflow
+/ds-model         # AutoML solution-tree: AIDE-style draft→train→eval→improve loop
+/ds-verify        # standalone rubric verifier: grades any answer against the 6 DS failure modes
+/ds-reconcile     # blackboard reconciliation: clusters answers into consensus + minority report
+/ds-vote          # self-consistency N-vote: majority answer + stability score
+/ds-search        # standalone MCTS search: tree-search a single hard task
+/ds-memory        # persistent recipe store: remember and reuse what worked across sessions
 ```
 
 Or just ask an analytical question over a data file — Claude will trigger the right skill
@@ -62,7 +69,7 @@ claude plugin uninstall ds-crew@ds-crew
 
 ---
 
-## The six skills
+## The thirteen skills
 
 | skill | what it does | reach for it when |
 |-------|--------------|-------------------|
@@ -72,9 +79,17 @@ claude plugin uninstall ds-crew@ds-crew
 | **`ds-spike`** | Ensemble — N diverse data scientists in parallel, reconciled into consensus + minority report | a number that must be right; two runs disagreed (costs N× — spend for confidence) |
 | **`data-profile`** | Standalone data-quality / profiling report (per-column + cross-file join checks) | onboarding a dataset; "is this data clean / what's in it?" |
 | **`eda-narrative`** | Exploration → a stakeholder-ready narrative, each finding backed by a number/chart | "what's interesting here?" with no single precise question |
+| **`ds-conduct`** | Data-aware orchestrator — peeks at data, grills, assembles + executes a crew workflow | Starting fresh with data; fuzzy request; don't know which skills to use |
+| **`ds-model`** | AutoML solution-tree — AIDE-style draft→train→eval→improve loop with leakage/CV discipline | Predict/forecast; Kaggle; improve model accuracy |
+| **`ds-verify`** | Standalone rubric verifier — grades any answer against the 6 DS failure modes | Check/audit any result from any source |
+| **`ds-reconcile`** | Blackboard reconciliation — clusters existing answers into consensus + minority report | Already have multiple answers; want them reconciled |
+| **`ds-vote`** | Self-consistency N-vote — same solver N times, majority answer + stability | Quick stability check; moderate-stakes question |
+| **`ds-search`** | Standalone MCTS search — tree-search a single hard task | One task keeps failing greedy; want alternative solution paths |
+| **`ds-memory`** | Persistent recipe store — remember and reuse what worked across sessions | Inspect/prune past analyses; seed new runs from history |
 
-**Typical flow for something important:** `data-profile` → `ds-clarify` → `ds-spike` (which runs
-several `ds-star-plus` solvers) → reconciled answer.
+> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)**
+
+**Typical flow for something important:** `ds-conduct` (orchestrates the whole crew) → `data-profile` → `ds-clarify` → `ds-spike` (ensemble) → reconciled answer. See [docs/USAGE.md](docs/USAGE.md) for all routing options.
 
 ### `ds-star` vs `ds-star-plus` at a glance
 
@@ -130,18 +145,43 @@ ds-crew/
 │   │   │   ├── search_mode.md      optional MCTS search mode (A2)
 │   │   │   ├── retrieval.md        two-stage + column-match retrieval (A3)
 │   │   │   ├── prompts.md          upgraded prompts (rubric-graded verifier)
-│   │   │   └── worked_example.md   annotated trace with backtracking
+│   │   │   ├── worked_example.md   annotated trace with backtracking
+│   │   │   ├── execution.md        persistent IPython kernel (opt-in, Track F)
+│   │   │   ├── planning_graph.md   DAG planning + dynamic replan (Track G)
+│   │   │   └── sandbox.md          working-dir discipline + no-network default (Track J)
 │   │   └── scripts/
 │   │       ├── analyze_file.py     describer + schema digest emitter
 │   │       ├── route_model.py      pick_model() routing helper
-│   │       └── verify_schema.py    verdict validator (+ test_verify_schema.py)
+│   │       ├── verify_schema.py    verdict validator (+ test_verify_schema.py)
+│   │       ├── run_manifest.py     reproducibility manifest emitter (Track J)
+│   │       └── kernel_runner.py    persistent kernel driver (Track F)
 │   ├── ds-clarify/                 human-in-the-loop spec (SKILL + checklist + template)
 │   ├── ds-spike/                   ensemble: SKILL + personas + aggregation
+│   │   ├── references/debate.md    optional cross-critique mode (Track I)
 │   │   └── scripts/aggregate.py    consensus + minority report (+ test_aggregate.py)
 │   ├── data-profile/               standalone data-quality report
-│   └── eda-narrative/              exploration → narrative
+│   ├── eda-narrative/              exploration → narrative
+│   ├── ds-conduct/                 data-aware orchestrator (Track K)
+│   │   └── SKILL.md · references/{trigger_catalog,workflow_plan_template,evidence}.md
+│   ├── ds-model/                   AutoML solution-tree (Track H)
+│   │   ├── SKILL.md · evals/evals.json
+│   │   ├── references/{solution_tree,leakage_cv,evidence}.md
+│   │   └── scripts/leaderboard.py
+│   ├── ds-memory/                  persistent recipe store (Track E)
+│   │   ├── SKILL.md · references/store_format.md
+│   │   └── scripts/memory_store.py
+│   ├── ds-verify/                  standalone rubric verifier (Track L)
+│   │   └── SKILL.md
+│   ├── ds-reconcile/               blackboard reconciliation (Track L)
+│   │   └── SKILL.md
+│   ├── ds-vote/                    self-consistency N-vote (Track L)
+│   │   └── SKILL.md
+│   └── ds-search/                  standalone MCTS search (Track L)
+│       └── SKILL.md
 ├── .claude-plugin/                 plugin.json + marketplace.json
-├── docs/superpowers/plans/         implementation plans (e.g. rubric-verifier)
+├── docs/
+│   ├── USAGE.md                    decision table, flowchart, canonical pipelines
+│   └── superpowers/plans/          implementation plans (e.g. rubric-verifier)
 ├── ARCHITECTURE.md                 v1 vs v2 side-by-side
 ├── ROADMAP.md                      tracks, statuses, dependency order
 ├── papers/README.md               bibliography (PDFs gitignored, re-fetchable)
@@ -165,9 +205,12 @@ provides checkable test cases.
 
 ## Status
 
-The full roadmap is implemented: the rubric-graded verifier (DeepVerifier-style), the human-in-the-
-loop `ds-clarify`, the capstone `ds-spike` ensemble (blackboard reconciliation), `data-profile`,
-`eda-narrative`, and `ds-star-plus`'s optional MCTS search mode + upgraded retrieval. Each change is
-tied to a paper in the bibliography at [`papers/README.md`](papers/README.md); the tracks, statuses,
-and dependency order live in [`ROADMAP.md`](ROADMAP.md). The two Python helpers ship with unit tests
-(`python3 -m unittest` in each `scripts/` dir).
+All tracks A–M are implemented. Tracks A–D delivered the rubric-graded verifier (DeepVerifier-style),
+the human-in-the-loop `ds-clarify`, the capstone `ds-spike` ensemble (blackboard reconciliation),
+`data-profile`, `eda-narrative`, and `ds-star-plus`'s optional MCTS search mode + upgraded retrieval.
+Tracks E–M (v1.2) add persistent memory (`ds-memory`), stateful kernel execution, DAG planning,
+AutoML solution-tree (`ds-model`), debate mode in `ds-spike`, sandbox + provenance, the data-aware
+orchestrator (`ds-conduct`), five standalone primitive skills, and the `docs/USAGE.md` routing guide.
+Each change is tied to a paper in the bibliography at [`papers/README.md`](papers/README.md); the
+tracks, statuses, and dependency order live in [`ROADMAP.md`](ROADMAP.md). The Python helpers ship
+with unit tests (`python3 -m unittest` in each `scripts/` dir).
