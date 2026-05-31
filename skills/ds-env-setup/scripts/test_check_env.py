@@ -1,4 +1,4 @@
-import os, sys, tempfile, unittest
+import os, shutil, sys, tempfile, unittest
 
 from check_env import detect_env, check_imports
 
@@ -7,11 +7,13 @@ class TestDetectEnv(unittest.TestCase):
     def _make(self, files=(), env=None):
         """Create a temp dir with the given filenames present."""
         d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, ignore_errors=True)
         for f in files:
             if f.endswith("/"):
                 os.makedirs(os.path.join(d, f.rstrip("/")), exist_ok=True)
             else:
-                open(os.path.join(d, f), "w").close()
+                with open(os.path.join(d, f), "w") as _:
+                    pass
         return d, (env or {})
 
     def test_uv_lock_wins(self):
@@ -20,16 +22,17 @@ class TestDetectEnv(unittest.TestCase):
         self.assertEqual(result["manager"], "uv")
 
     def test_pyproject_plus_uv_on_path(self):
-        import shutil
+        if not shutil.which("uv"):
+            self.skipTest("uv not on PATH")
         d, e = self._make(["pyproject.toml"])
-        if shutil.which("uv"):
-            result = detect_env(d, e)
-            self.assertEqual(result["manager"], "uv")
+        result = detect_env(d, e)
+        self.assertEqual(result["manager"], "uv")
 
     def test_venv_dir_detected(self):
         d, e = self._make([".venv/"])
         result = detect_env(d, e)
         self.assertEqual(result["manager"], "venv")
+        self.assertTrue(result["active_venv"].endswith(".venv"))
 
     def test_venv_dir_alt_name(self):
         d, e = self._make(["venv/"])

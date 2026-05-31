@@ -11,6 +11,8 @@ CLI:
 """
 import importlib.util, json, os, shutil, sys
 
+_DS_PACKAGES = ("pandas", "openpyxl", "matplotlib")
+
 
 def detect_env(cwd, environ):
     """Return env manager info for the given directory.
@@ -40,18 +42,22 @@ def detect_env(cwd, environ):
         else environ.get("VIRTUAL_ENV", "")
     )
 
+    candidate = os.path.join(venv_path, "bin", "python") if venv_path else ""
+    python_path = candidate if (candidate and os.path.isfile(candidate)) else sys.executable
+
+    active_venv = venv_path if (venv_path and os.path.isdir(venv_path)) else environ.get("VIRTUAL_ENV", "")
+
     return {
         "manager": manager,
-        "python_path": sys.executable,
+        "python_path": python_path,
         "project_root": cwd,
-        "active_venv": venv_path,
+        "active_venv": active_venv,
     }
 
 
 def check_imports():
     """Return True if pandas, openpyxl, and matplotlib are all importable."""
-    packages = ("pandas", "openpyxl", "matplotlib")
-    return all(importlib.util.find_spec(p) is not None for p in packages)
+    return all(importlib.util.find_spec(p) is not None for p in _DS_PACKAGES)
 
 
 if __name__ == "__main__":
@@ -59,7 +65,7 @@ if __name__ == "__main__":
         if check_imports():
             sys.exit(0)
         missing = [
-            p for p in ("pandas", "openpyxl", "matplotlib")
+            p for p in _DS_PACKAGES
             if importlib.util.find_spec(p) is None
         ]
         print(f"ds-crew: missing packages: {', '.join(missing)} — run /ds-env-setup")
