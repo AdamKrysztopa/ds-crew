@@ -167,11 +167,22 @@ if __name__ == "__main__":
 
 **Grounding:** CodeAct (2402.01030).
 
-### Task F.1: Add the optional kernel dependency
+### Task F.1: Environment-aware dependency policy (no global pip assumption)
 
-**Files:** Modify `package.json` (note only) — Python deps are documented in the skill, not a repo-level requirements file.
+**The problem this avoids:** the kernel deps must live in **the same interpreter that runs the analysis** — which may be a `venv`, a `uv`-managed env, `poetry`, or `conda`, not a global Python. A bare `pip install` can install into the wrong interpreter, and Jupyter's default kernelspec may launch a *different* Python than the one with the user's `pandas`. Two rules follow, implemented in F.2/F.3:
 
-- [ ] **Step 1:** In `skills/ds-star-plus/references/execution.md` (created in F.3) document the install: `pip install jupyter_client ipykernel`. The kernel path is **opt-in**; script mode needs nothing.
+1. **The kernel always launches under `sys.executable`** (the active interpreter), not a registered kernelspec — so it inherits the venv/uv/conda env automatically.
+2. **Install guidance is env-detected**, and always targets the active env:
+
+| Detected env | Install command |
+|---|---|
+| `uv` (`uv.lock`/`pyproject.toml` + `uv` on PATH) | `uv pip install ipykernel jupyter_client` (or `uv add …` to persist as a dep) |
+| active `venv` (`$VIRTUAL_ENV` set) | `python -m pip install ipykernel jupyter_client` |
+| `poetry` (`poetry.lock`) | `poetry add ipykernel jupyter_client` |
+| `conda` (`$CONDA_PREFIX`, no venv) | `conda install -y ipykernel jupyter_client` |
+| plain / unknown | `"{sys.executable}" -m pip install ipykernel jupyter_client` |
+
+- [ ] **Step 1:** No code here — this policy is realized by `check_kernel_available()` / `kernel_install_hint()` (F.2) and documented in `execution.md` (F.3).
 - [ ] **Step 2:** No standalone commit (folded into F.2/F.3).
 
 ### Task F.2: `kernel_runner.py` — pure helpers test-first, live kernel guarded
@@ -183,11 +194,12 @@ if __name__ == "__main__":
 - [ ] **Step 1: Write the failing test** (unit-tests the pure helpers with fixture messages; the live-kernel test self-skips if `ipykernel` is absent):
 
 ```python
-import importlib.util, unittest
-from kernel_runner import collect_output, should_reset, KernelSession
+import importlib.util, sys, unittest
+from kernel_runner import (collect_output, should_reset,
+                           check_kernel_available, kernel_install_hint, KernelSession)
 
-def _has_ipykernel():
-    return importlib.util.find_spec("ipykernel") is not None
+def _has_kernel():
+    return all(importlib.util.find_spec(m) for m in ("jupyter_client", "ipykernel"))
 
 class TestPureHelpers(unittest.TestCase):
     def test_collect_output_joins_stream_and_result(self):
@@ -203,17 +215,36 @@ class TestPureHelpers(unittest.TestCase):
         msgs = [{"msg_type": "error", "content": {"ename": "ValueError", "evalue": "bad", "traceback": ["t"]}}]
         out = collect_output(msgs)
         self.assertEqual(out["error"]["ename"], "ValueError")
-    def test_should_reset_on_redefine_of_core_import(self):
+    def test_should_reset_on_long_session(self):
         self.assertTrue(should_reset(["import pandas as pd"], cells_run=40))   # long session
         self.assertFalse(should_reset(["df.head()"], cells_run=2))
 
-@unittest.skipUnless(_has_ipykernel(), "ipykernel not installed")
+class TestEnvAwareInstall(unittest.TestCase):
+    def test_hint_names_both_packages(self):
+        hint = kernel_install_hint()
+        self.assertIn("ipykernel", hint)
+        self.assertIn("jupyter_client", hint)
+    def test_hint_targets_active_interpreter_in_plain_env(self):
+        # in a plain env (no uv/poetry/conda markers) the hint must use *this* interpreter,
+        # never a bare global `pip` — guards the venv/uv concern.
+        hint = kernel_install_hint(cwd="/tmp/__nonexistent_no_markers__", env={})
+        self.assertIn(sys.executable, hint)
+    def test_check_returns_tuple_with_hint_when_missing(self):
+        ok, hint = check_kernel_available()
+        self.assertIsInstance(ok, bool)
+        if not ok:
+            self.assertIn("ipykernel", hint)
+
+@unittest.skipUnless(_has_kernel(), "jupyter_client/ipykernel not installed")
 class TestLiveKernel(unittest.TestCase):
-    def test_state_persists_across_cells(self):
+    def test_state_persists_and_uses_active_interpreter(self):
         with KernelSession() as k:
             k.run("x = 21")
             out = k.run("print(x * 2)")
             self.assertEqual(out["stdout"].strip(), "42")
+            # the kernel must be the SAME interpreter that launched it (venv/uv safety)
+            out2 = k.run("import sys; print(sys.executable)")
+            self.assertEqual(out2["stdout"].strip(), sys.executable)
 
 if __name__ == "__main__":
     unittest.main()
@@ -221,18 +252,24 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: Run to verify it fails.** `python3 -m unittest test_kernel_runner -v` → FAIL (no module).
 
-- [ ] **Step 3: Implement `kernel_runner.py`.** `collect_output(messages)` and `should_reset(...)` are pure (stdlib). `KernelSession` wraps `jupyter_client.BlockingKernelClient` via `jupyter_client.manager.start_new_kernel`, exposes `run(code, timeout=30) -> {stdout,result,error}` (drains iopub until idle, parses with `collect_output`), and `__enter__/__exit__` to start/shutdown. Import of `jupyter_client` happens **inside** `KernelSession.__init__` so the module imports without it.
+- [ ] **Step 3: Implement `kernel_runner.py`.** `collect_output` / `should_reset` are pure stdlib. `kernel_install_hint(cwd, env)` detects the env manager and **always targets the active interpreter** (never a bare global `pip`). `check_kernel_available()` reports importability + the hint. `KernelSession` binds the kernel to `sys.executable` via an explicit launch command (so it inherits the venv/uv/conda env regardless of registered kernelspecs); `jupyter_client` is imported lazily inside `__init__` so the module imports without it.
 
 ```python
 #!/usr/bin/env python3
 """Persistent IPython-kernel execution for ds-star-plus (Track F, CodeAct 2402.01030).
 
-Opt-in: needs `pip install jupyter_client ipykernel`. Script mode remains the default.
-    from kernel_runner import KernelSession
-    with KernelSession() as k:
-        k.run("import pandas as pd; df = pd.read_csv('a.csv')")
-        out = k.run("print(len(df))")        # state persists; out['stdout'] == '<n>\\n'
+Opt-in and environment-aware: the kernel runs under THIS interpreter (sys.executable),
+so it inherits whatever venv / uv / conda env launched it. Script mode is the default
+and needs nothing. See references/execution.md for install guidance per env manager.
+    from kernel_runner import KernelSession, check_kernel_available
+    ok, hint = check_kernel_available()       # hint tells the user how to install, in THEIR env
+    if ok:
+        with KernelSession() as k:
+            k.run("import pandas as pd; df = pd.read_csv('a.csv')")
+            out = k.run("print(len(df))")      # state persists across cells
 """
+import importlib.util, os, shutil, sys
+
 def collect_output(messages):
     stdout, result, error = [], None, None
     for m in messages:
@@ -250,11 +287,39 @@ def should_reset(recent_cells, cells_run, max_cells=30):
     """Heuristic: reset a long-lived kernel to bound state drift / leaked memory."""
     return cells_run >= max_cells
 
+def kernel_install_hint(cwd=None, env=None):
+    """Env-appropriate install command for ipykernel+jupyter_client, targeting the ACTIVE env.
+
+    Never emits a bare global `pip`: falls back to `"{sys.executable}" -m pip` so the install
+    lands in the interpreter actually running the analysis (venv/uv-safe).
+    """
+    cwd = cwd if cwd is not None else os.getcwd()
+    env = env if env is not None else os.environ
+    pkgs = "ipykernel jupyter_client"
+    has = lambda f: os.path.exists(os.path.join(cwd, f))
+    if shutil.which("uv") and (has("uv.lock") or has("pyproject.toml")):
+        return f"uv pip install {pkgs}   # or: uv add {pkgs}"
+    if has("poetry.lock"):
+        return f"poetry add {pkgs}"
+    if env.get("CONDA_PREFIX") and not env.get("VIRTUAL_ENV"):
+        return f"conda install -y {pkgs}"
+    if env.get("VIRTUAL_ENV"):
+        return f"python -m pip install {pkgs}"          # active venv on PATH
+    return f'"{sys.executable}" -m pip install {pkgs}'  # plain/unknown: bind to this interpreter
+
+def check_kernel_available():
+    ok = all(importlib.util.find_spec(m) for m in ("jupyter_client", "ipykernel"))
+    return ok, "" if ok else kernel_install_hint()
+
 class KernelSession:
     def __init__(self):
-        from jupyter_client.manager import start_new_kernel
-        self._km, self._kc = start_new_kernel()
-        self.cells_run = 0
+        from jupyter_client.manager import KernelManager
+        km = KernelManager()
+        # bind the kernel to the CURRENT interpreter, not a registered kernelspec:
+        km.kernel_cmd = [sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"]
+        km.start_kernel()
+        kc = km.client(); kc.start_channels(); kc.wait_for_ready(timeout=60)
+        self._km, self._kc, self.cells_run = km, kc, 0
     def run(self, code, timeout=30):
         self._kc.execute(code)
         msgs = []
@@ -271,14 +336,16 @@ class KernelSession:
         self._kc.stop_channels(); self._km.shutdown_kernel(now=True)
 ```
 
-- [ ] **Step 4: Run tests.** `python3 -m unittest test_kernel_runner -v` → PASS (pure tests pass; live test passes if `ipykernel` present, else skipped).
+> Note: `km.kernel_cmd` may emit a DeprecationWarning on newer `jupyter_client`; it is still honored and is the simplest interpreter-pinning approach. If it is ever removed, register a transient kernelspec for `sys.executable` instead — same intent.
+
+- [ ] **Step 4: Run tests.** `python3 -m unittest test_kernel_runner -v` → PASS (pure + env-hint tests always pass; live test passes if the deps are in the active env, else skipped).
 - [ ] **Step 5: Commit.** `feat(ds-star-plus): optional stateful kernel runner (track F)`.
 
 ### Task F.3: `references/execution.md` + SKILL.md EXECUTE stage
 
 **Files:** Create `skills/ds-star-plus/references/execution.md`; Modify `skills/ds-star-plus/SKILL.md` (EXECUTE stage)
 
-- [ ] **Step 1:** Write `execution.md`. Required sections: **Two modes** (script default = paper-faithful + fully reproducible; kernel opt-in = incremental state, cheaper re-runs), **When to use the kernel** (long multi-step exploratory tasks; NOT when reproducibility/auditability is paramount), **State hygiene** (`should_reset` heuristic; re-import at reset), **Mandatory clean re-run before FINALIZE** (re-execute the full accumulated script once from a fresh kernel/process to guarantee the final answer is reproducible — closes the stateful-execution risk in spec §3 F), **Install** (`pip install jupyter_client ipykernel`).
+- [ ] **Step 1:** Write `execution.md`. Required sections: **Two modes** (script default = paper-faithful + fully reproducible + zero extra deps; kernel opt-in = incremental state, cheaper re-runs), **When to use the kernel** (long multi-step exploratory tasks; NOT when reproducibility/auditability is paramount), **State hygiene** (`should_reset` heuristic; re-import at reset), **Mandatory clean re-run before FINALIZE** (re-execute the full accumulated script once from a fresh kernel/process to guarantee the final answer is reproducible — closes the stateful-execution risk in spec §3 F), and **Install — environment-aware** (this is the critical section): state that the kernel runs under the **active interpreter** (`sys.executable`), so deps must be installed into *that* env, never a global `pip`; reproduce the env-detection table from Task F.1 (uv / venv / poetry / conda / plain); and instruct callers to obtain the exact command at runtime from `check_kernel_available()` rather than hard-coding one. Add a one-liner that the agent should invoke our scripts through the project's runner (e.g. `uv run python …` under uv, or the activated venv's `python`) so `sys.executable` is already correct.
 - [ ] **Step 2:** Update SKILL.md EXECUTE stage to mention both modes and link `references/execution.md`; default stays script.
 - [ ] **Step 3:** Commit: `docs(ds-star-plus): kernel-vs-script execution reference (track F)`.
 
@@ -653,5 +720,5 @@ Expected: all suites OK (run_manifest, kernel_runner, memory_store, leaderboard,
 
 - **Spec coverage:** E→Phase E; F→Phase F; G→Phase G; H→Phase H; I→Phase I; J→Phase J; K→Phase K; L→Phase L (ds-verify/reconcile/vote/search + ds-route utility); M→Phase M (USAGE.md). Citation gate→Phase 0. Docs/manifest deltas→Phase M (+ per-phase docs tasks). All spec §3 tracks mapped.
 - **Open-decision resolution:** ds-memory = both inspector + substrate (E.2); kernel default = script, kernel opt-in (F.3); ds-conduct = checkpoint per handoff (K.3); ds-route = utility not command (L.5); ds-vote = thin standalone skill (L.3); /ds-help = not shipped, USAGE.md only (M.1).
-- **Type consistency:** `build_manifest/write_manifest` (J), `collect_output/should_reset/KernelSession.run` (F), `record/retrieve/task_signature` (E), `Leaderboard.add/best/node_to_expand/tree` (H), `aggregate(...)["n_revised"]` (I) used consistently across their tasks and references. Reused existing `parse_verdict/is_sufficient` (verify_schema) and `aggregate` (aggregate.py) by their real signatures.
+- **Type consistency:** `build_manifest/write_manifest` (J), `collect_output/should_reset/check_kernel_available/kernel_install_hint/KernelSession.run` (F, kernel pinned to `sys.executable`; install hints env-aware, never global pip), `record/retrieve/task_signature` (E), `Leaderboard.add/best/node_to_expand/tree` (H), `aggregate(...)["n_revised"]` (I) used consistently across their tasks and references. Reused existing `parse_verdict/is_sufficient` (verify_schema) and `aggregate` (aggregate.py) by their real signatures.
 - **Placeholder scan:** no TBD/TODO; markdown tasks carry explicit required-section lists + acceptance criteria; code tasks carry real test + impl.
