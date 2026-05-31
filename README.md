@@ -218,7 +218,7 @@ provides checkable test cases.
 
 ## Status
 
-All tracks A–M are **implemented**; **validation against external benchmarks is pending** (see [`docs/STATUS.md`](docs/STATUS.md)). Skills with passing unit/eval test suites are marked 🟡; the rest await the Phase 1 external benchmark. The benchmark plan and the open ds-spike-vs-verifier question are documented in `skills/ds-star-plus/references/benchmark.md`.
+All tracks A–M are **implemented**; **validation against external benchmarks is pending** (see [`docs/STATUS.md`](docs/STATUS.md)). Skills with passing unit/eval test suites are marked 🟡; the rest await the Phase 1 external benchmark. Benchmark plan and the open ds-spike-vs-verifier question: [`skills/ds-star-plus/references/benchmark.md`](skills/ds-star-plus/references/benchmark.md).
 
 Tracks A–D delivered the rubric-graded verifier (DeepVerifier-style),
 the human-in-the-loop `ds-clarify`, the capstone `ds-spike` ensemble (blackboard reconciliation),
