@@ -83,6 +83,8 @@ claude plugin uninstall ds-crew@ds-crew
 
 ## The fourteen skills
 
+**New here?** Start with a [config profile](docs/profiles.md) or run `/ds-conduct` — it inspects your data and routes automatically. See [docs/USAGE.md](docs/USAGE.md) for the full chooser.
+
 | skill | what it does | reach for it when |
 |-------|--------------|-------------------|
 | **`ds-star`** | Baseline iterative solver — analyze files → grow a verified plan one step at a time | reproducing the paper; a simple, single-model baseline |
@@ -100,7 +102,9 @@ claude plugin uninstall ds-crew@ds-crew
 | **`ds-memory`** | Persistent recipe store — remember and reuse what worked across sessions | Inspect/prune past analyses; seed new runs from history |
 | **`ds-env-setup`** | Set up / verify the Python env — detects uv/venv/conda/poetry/pipenv, installs core packages, offers a SessionStart hook | Before first analysis; after changing env; `ImportError` during a run |
 
-> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)**
+> **Advanced primitives** (`ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`, `ds-memory`): invoke directly only when you have a specific need — checking an answer, reconciling existing results, or inspecting the memory store. Most users start at `/ds-conduct`.
+
+> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)** · [Config profiles](docs/profiles.md)
 
 **Typical flow for something important:** `ds-conduct` (orchestrates the whole crew) → `data-profile` → `ds-clarify` → `ds-spike` (ensemble) → reconciled answer. See [docs/USAGE.md](docs/USAGE.md) for all routing options.
 
