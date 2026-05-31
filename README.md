@@ -1,8 +1,9 @@
-# DS-STAR skill suite for Claude Code
+# Data-science skill suite for Claude Code
 
-> **Two installable Claude Code skills** that implement the DS-STAR data-science agent
-> (Nam et al., 2025) — answering analytical questions over data files by writing and
-> executing Python through an iterative loop that **never trusts code just because it ran**.
+> **Six installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
+> (Nam et al., 2025) and follow-on research — answering analytical questions over data files by
+> writing and executing Python through an iterative loop that **never trusts code just because it
+> ran**, plus clarification, ensembling, profiling, and exploration skills around it.
 
 ---
 
@@ -41,11 +42,16 @@ claude plugin install ds-star@ds-star --scope local
 Invoke explicitly in any Claude Code session:
 
 ```
-/ds-star
-/ds-star-plus
+/ds-star          # baseline iterative solver (paper-faithful)
+/ds-star-plus     # reliability- & cost-hardened solver (rubric verifier, routing)
+/ds-clarify       # human-in-the-loop: pin down intent → analysis-spec.md
+/ds-spike         # ensemble: N data scientists in parallel → consensus + minority report
+/data-profile     # standalone data-quality / profiling report
+/eda-narrative    # exploration → stakeholder-ready narrative
 ```
 
-Or just ask an analytical question over a data file — Claude will trigger the skill automatically.
+Or just ask an analytical question over a data file — Claude will trigger the right skill
+automatically.
 
 ### Updating / uninstalling
 
@@ -56,12 +62,26 @@ claude plugin uninstall ds-star@ds-star
 
 ---
 
-## Which skill to use
+## The six skills
+
+| skill | what it does | reach for it when |
+|-------|--------------|-------------------|
+| **`ds-star`** | Baseline iterative solver — analyze files → grow a verified plan one step at a time | reproducing the paper; a simple, single-model baseline |
+| **`ds-star-plus`** | Hardened solver: per-role Haiku/Sonnet/Opus routing, **rubric-graded verifier**, oscillation handling, digest caching, two-stage retrieval, optional MCTS search mode | production, multi-file, cost-sensitive, high-reliability work |
+| **`ds-clarify`** | Human-in-the-loop pre-flight — interrogate intent, write `analysis-spec.md` | the question is fuzzy, high-stakes, or contested — run it **before** a solver |
+| **`ds-spike`** | Ensemble — N diverse data scientists in parallel, reconciled into consensus + minority report | a number that must be right; two runs disagreed (costs N× — spend for confidence) |
+| **`data-profile`** | Standalone data-quality / profiling report (per-column + cross-file join checks) | onboarding a dataset; "is this data clean / what's in it?" |
+| **`eda-narrative`** | Exploration → a stakeholder-ready narrative, each finding backed by a number/chart | "what's interesting here?" with no single precise question |
+
+**Typical flow for something important:** `data-profile` → `ds-clarify` → `ds-spike` (which runs
+several `ds-star-plus` solvers) → reconciled answer.
+
+### `ds-star` vs `ds-star-plus` at a glance
 
 | | `ds-star` | `ds-star-plus` |
 |---|---|---|
 | **Model** | Single model throughout | Haiku / Sonnet / Opus per role |
-| **Verifier output** | Yes / No | `{sufficient, reason, missing}` |
+| **Verifier output** | Yes / No | graded `{score 1–4, rubric, checks, reason, missing}` |
 | **Backtracking** | Truncate + regenerate | + anti-repeat list, oscillation handling |
 | **Token cost** | Full descriptions every round | Schema digests by default |
 | **Best for** | Baseline / reproducing the paper | Production, multi-file, cost-sensitive work |
@@ -98,34 +118,34 @@ runs it 3× with majority vote on borderline calls.
 ```
 ds-stats-with-claude/
 ├── skills/
-│   ├── ds-star/                    v1 — faithful paper implementation
+│   ├── ds-star/                    baseline — faithful paper implementation
+│   │   ├── SKILL.md · references/{prompts,worked_example}.md · scripts/analyze_file.py
+│   ├── ds-star-plus/               hardened solver (routing, rubric verifier, retrieval)
 │   │   ├── SKILL.md
+│   │   ├── evals/evals.json        checkable test cases
 │   │   ├── references/
-│   │   │   ├── prompts.md          role prompts for each loop step
-│   │   │   └── worked_example.md   annotated 5-round trace
+│   │   │   ├── model_routing.md    Opus/Sonnet/Haiku routing policy
+│   │   │   ├── evidence.md         paper-grounded "why" for every change
+│   │   │   ├── rubric.md           the six DS failure modes (v2.1 verifier)
+│   │   │   ├── search_mode.md      optional MCTS search mode (A2)
+│   │   │   ├── retrieval.md        two-stage + column-match retrieval (A3)
+│   │   │   ├── prompts.md          upgraded prompts (rubric-graded verifier)
+│   │   │   └── worked_example.md   annotated trace with backtracking
 │   │   └── scripts/
-│   │       └── analyze_file.py     Stage 1 file describer
-│   └── ds-star-plus/               v2 — reliability- and cost-hardened
-│       ├── SKILL.md
-│       ├── evals/
-│       │   └── evals.json          checkable test cases
-│       ├── references/
-│       │   ├── model_routing.md    Opus/Sonnet/Haiku routing policy
-│       │   ├── evidence.md         paper-grounded "why" for every v2 change
-│       │   ├── prompts.md          upgraded prompts (structured verifier)
-│       │   └── worked_example.md   annotated trace with backtracking
-│       └── scripts/
-│           ├── analyze_file.py     describer + schema digest emitter
-│           └── route_model.py      pick_model() routing helper
-├── .claude-plugin/
-│   ├── plugin.json                 plugin manifest
-│   └── marketplace.json            marketplace manifest
+│   │       ├── analyze_file.py     describer + schema digest emitter
+│   │       ├── route_model.py      pick_model() routing helper
+│   │       └── verify_schema.py    verdict validator (+ test_verify_schema.py)
+│   ├── ds-clarify/                 human-in-the-loop spec (SKILL + checklist + template)
+│   ├── ds-spike/                   ensemble: SKILL + personas + aggregation
+│   │   └── scripts/aggregate.py    consensus + minority report (+ test_aggregate.py)
+│   ├── data-profile/               standalone data-quality report
+│   └── eda-narrative/              exploration → narrative
+├── .claude-plugin/                 plugin.json + marketplace.json
+├── docs/superpowers/plans/         implementation plans (e.g. rubric-verifier)
 ├── ARCHITECTURE.md                 v1 vs v2 side-by-side
-├── ROADMAP.md                      planned plus-improvements + new skills
-├── papers/
-│   └── README.md                   bibliography (PDFs gitignored, re-fetchable)
-├── architecture-comparison.svg     mirrored diagram
-└── make_diagram.py                 regenerate the SVG
+├── ROADMAP.md                      tracks, statuses, dependency order
+├── papers/README.md               bibliography (PDFs gitignored, re-fetchable)
+├── architecture-comparison.svg · make_diagram.py
 ```
 
 ---
@@ -143,11 +163,11 @@ analyzer/router ablations (Table 4, e.g. hard accuracy 45.24 → 26.98 without d
 chain is in `skills/ds-star-plus/references/evidence.md`; `skills/ds-star-plus/evals/evals.json`
 provides checkable test cases.
 
-## What's next
+## Status
 
-This repo is growing from "a DS-STAR implementation" into a suite of recent data-science skills.
-The planned work — a rubric-guided verifier upgrade (DeepVerifier), a human-in-the-loop `ds-clarify`
-skill, a capstone `ds-spike` that runs many diverse data scientists in parallel and reconciles their
-findings on a shared blackboard, and an optional MCTS search mode — is laid out in
-[`ROADMAP.md`](ROADMAP.md), each item tied to a paper in the bibliography at
-[`papers/README.md`](papers/README.md).
+The full roadmap is implemented: the rubric-graded verifier (DeepVerifier-style), the human-in-the-
+loop `ds-clarify`, the capstone `ds-spike` ensemble (blackboard reconciliation), `data-profile`,
+`eda-narrative`, and `ds-star-plus`'s optional MCTS search mode + upgraded retrieval. Each change is
+tied to a paper in the bibliography at [`papers/README.md`](papers/README.md); the tracks, statuses,
+and dependency order live in [`ROADMAP.md`](ROADMAP.md). The two Python helpers ship with unit tests
+(`python3 -m unittest` in each `scripts/` dir).

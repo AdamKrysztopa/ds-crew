@@ -1,13 +1,21 @@
 # Roadmap — toward a suite of recent data-science skills
 
 This repo started as a faithful implementation of DS-STAR (`ds-star`) plus a reliability- and
-cost-hardened successor (`ds-star-plus`). This document plans the next two tracks:
+cost-hardened successor (`ds-star-plus`). This document plans the tracks below:
 
 - **Track A** — concrete improvements to `ds-star-plus`, each pulled from a specific newer paper.
 - **Track B** — new data-science skills, led by the human-in-the-loop "grill" skill.
+- **Track D** — the `ds-spike` ensemble capstone.
+- **Track C** — repo evolution into a data-science skill suite.
 
 Every item is tied to a source in [`papers/`](papers/README.md). Status legend:
-🟢 ready to build · 🟡 needs a design decision · ⚪ exploratory.
+🟢 ready to build · 🟡 needs a design decision · ⚪ exploratory · ✅ **implemented**.
+
+> **Implementation status (2026-05-31): all tracks shipped.** A1 ✅ (rubric verifier + tests),
+> A2 ✅ (`references/search_mode.md`), A3 ✅ (`references/retrieval.md`), B1 ✅ (`ds-clarify`),
+> B2 ✅ (`data-profile`), B3 ✅ (`eda-narrative`), D ✅ (`ds-spike` + tested aggregator),
+> C ✅ (suite framing in README + manifests, v1.1.0). The sections below are kept as the design
+> rationale and the record of *why* each was built the way it was.
 
 ---
 

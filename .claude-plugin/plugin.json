@@ -1,7 +1,7 @@
 {
   "name": "ds-star",
-  "version": "1.0.0",
-  "description": "DS-STAR and DS-STAR+ iterative data-science agent skills. Answers analytical questions over data files (CSV, JSON, Excel, SQLite, and more) by writing and executing Python through a plan → implement → execute → verify → route loop with LLM-as-judge sufficiency checking.",
+  "version": "1.1.0",
+  "description": "A suite of recent data-science skills for Claude Code: ds-star & ds-star-plus (iterative plan→implement→execute→verify→route solving with a rubric-graded LLM-as-judge), ds-clarify (human-in-the-loop spec), ds-spike (multi-data-scientist ensemble), data-profile, and eda-narrative. Grounded in DS-STAR (Nam et al., 2025) and follow-on work.",
   "author": {
     "name": "Adam Krysztopa",
     "email": "krysztopa@gmail.com"
