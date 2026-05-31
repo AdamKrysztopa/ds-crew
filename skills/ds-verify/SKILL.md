@@ -1,6 +1,6 @@
 ---
 name: ds-verify
-description: "Standalone rubric-decomposed verifier. Use this skill WHENEVER the user wants to check, verify, sanity-check, or audit an answer or number that came from anywhere ('is this result right?', 'check this answer', 'audit this number', 'verify this analysis'). Applies the DeepVerifier-style 6-item DS failure rubric (wrong column, dropped rows, units mismatch, scope error, format mismatch, question substitution) and returns a graded score 1–4 with targeted follow-up checks. Do NOT use to produce a new analysis — use ds-star-plus for that."
+description: "Use when auditing any analysis result — grades it against the 6 DS failure modes and returns a score 1–4"
 ---
 
 # ds-verify : independently check any answer against the DS failure rubric

@@ -1,6 +1,6 @@
 ---
 name: ds-spike
-description: "Run a SPIKE on a high-stakes data-science problem: dispatch several independent data-scientist agents (diverse models, strategies, and seeds) to solve the SAME specified question in parallel, collect their answers + code + assumptions on a shared blackboard, then reconcile them into one consensus answer with a confidence and a minority report of where (and why) they disagreed. Use this skill WHENEVER a data result is high-stakes, irreversible, contested, or when two earlier single runs disagreed, or when the user asks for an ensemble / second opinion / spike / panel of data scientists / best-of-N on a data question, or wants to know how confident to be in a number. Agreement across diverse independent solvers is a far stronger correctness signal than one agent's self-check. This is the expensive, spend-for-confidence mode (N full runs) — reserve it for decisions that justify the cost. Pairs with ds-clarify (shared spec) and ds-star-plus (the solver). Do NOT use for routine, low-stakes, or already-settled questions."
+description: "Use when a number must be right — runs N diverse data scientists in parallel and reconciles into consensus + minority report"
 ---
 
 # ds-spike : a panel of data scientists, reconciled

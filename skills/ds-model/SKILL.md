@@ -1,6 +1,6 @@
 ---
 name: ds-model
-description: "AutoML solution-tree skill for building and iteratively improving predictive models. Use this skill WHENEVER the user wants to train or build a model, asks for prediction or forecasting, wants to compete in a Kaggle/ML competition, says 'improve model accuracy', 'find the best model', 'tune hyperparameters', or wants an ML submission file. Uses AIDE-style solution tree with empirical leaderboard and strict leakage/CV discipline. Do NOT use for factoid aggregation or analytical questions over data — use ds-star-plus for those."
+description: "Use when building or improving a predictive model — AIDE-style solution tree with leakage discipline and empirical leaderboard"
 ---
 
 # ds-model : build, evaluate, and improve models with a solution tree

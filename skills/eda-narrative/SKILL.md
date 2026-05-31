@@ -1,6 +1,6 @@
 ---
 name: eda-narrative
-description: "Run an exploratory data analysis and produce a written narrative report (findings + charts), rather than answering one specific question. Use this skill WHENEVER the user wants to explore / understand / find patterns or insights in a dataset, asks what's interesting in this data, wants an EDA, an overview, a first look, trends, correlations, segments, or a stakeholder-ready summary with visuals. It computes grounded findings (each backed by a number or chart) and writes them as a readable story with caveats. Pairs after data-profile (quality first) and is distinct from ds-star-plus (which answers a precise question). Do NOT use for a single factoid/aggregation (use ds-star-plus), for prose unrelated to data, or for production ML."
+description: "Use when exploring data without a fixed question — produces a stakeholder-ready narrative backed by numbers and charts"
 ---
 
 # eda-narrative : exploration into a story

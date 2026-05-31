@@ -1,6 +1,6 @@
 ---
 name: ds-vote
-description: "Self-consistency N-vote for data science answers. Use this skill WHENEVER the user wants a quick confidence check ('run it a few times and see if it agrees', 'how stable is this number?', 'is this answer robust?'). Runs ds-star-plus N times with varied seeds (same model, same persona — no diversity), then aggregates for majority answer + agreement rate. This is the cheap cousin of ds-spike: no persona diversity, no debate, just vote count. Cite Wang et al. 2203.11171. Do NOT use for high-stakes contested results — use ds-spike with debate for that."
+description: "Use when checking answer stability — runs the same solver N times and returns the majority answer + agreement rate"
 ---
 
 # ds-vote : run the same solver N times and count votes

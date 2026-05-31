@@ -1,6 +1,6 @@
 ---
 name: ds-memory
-description: "Persistent cross-session recipe store for ds-crew analyses. Use this skill WHENEVER the user asks to inspect, prune, or reuse past analyses ('have we solved this before?', 'remember this analysis', 'reuse past work', 'what analyses have we run?'). Also the substrate other skills (ds-star-plus, ds-spike) call to seed planners and record verified outcomes. Do NOT use for new analysis — use ds-star-plus or ds-spike for that."
+description: "Use when browsing, pruning, or seeding a run from past analyses stored across sessions"
 ---
 
 # ds-memory : remember and reuse what worked

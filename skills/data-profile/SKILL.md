@@ -1,6 +1,6 @@
 ---
 name: data-profile
-description: "Produce a thorough data-quality / profiling report for one file or a whole folder (CSV, TSV, JSON, Excel/XLSX, Parquet, SQLite): shape, column types, missingness, cardinality, candidate keys, duplicate rows, value distributions, outliers, encoding/sentinel issues, and cross-file join compatibility. Use this skill WHENEVER the user wants to profile / audit / sanity-check / understand the quality of a dataset before analysis, asks what's in this data or whether it's clean, onboards a new dataset, or needs a data-quality report. This is DS-STAR's analyze-first stage promoted to a standalone deliverable. Pairs naturally before ds-star / ds-star-plus / ds-spike. Do NOT use to answer a specific analytical question (use ds-star-plus) or for prose."
+description: "Use when onboarding a dataset or asking 'what\'s in this data?' — per-column quality report with join-compatibility checks"
 ---
 
 # data-profile : know the data before you trust it

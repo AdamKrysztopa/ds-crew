@@ -1,6 +1,6 @@
 ---
 name: ds-reconcile
-description: "Standalone blackboard reconciliation skill. Use this skill WHENEVER the user already has multiple candidate answers and wants them reconciled ('reconcile these answers', 'which of these results is right?', 'combine these analyses', 'I got different numbers from two runs'). Clusters answers, weights verified ones higher, returns consensus + confidence + minority report. Optionally scores each candidate with ds-verify first. Do NOT use to produce new analyses — use ds-spike for a full parallel run."
+description: "Use when you already have multiple analysis answers — clusters them into consensus + minority report"
 ---
 
 # ds-reconcile : cluster existing answers into consensus + minority report

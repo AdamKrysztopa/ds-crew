@@ -1,6 +1,6 @@
 ---
 name: ds-clarify
-description: "Human-in-the-loop pre-flight for data-science questions: BEFORE running an analysis, interrogate the user to pin down every ambiguous choice (metric definitions, scope/filters, time window + timezone, null/duplicate/outlier handling, units, rounding, tie-breaking, exact output format), then write a concrete analysis-spec.md contract. Use this skill WHENEVER a data question is under-specified, high-stakes, or contested, or when the user asks to clarify/scope/spec out an analysis before computing, or says grill me on this analysis, or when two prior runs disagreed. The spec it produces becomes the rubric the ds-star / ds-star-plus verifier checks the answer against — so it prevents the most common silent failure: precisely answering a subtly different question than the user meant. Trigger before ds-star/ds-star-plus on important or fuzzy requests. Do NOT use for already-precise one-liners, prose writing, or generic coding."
+description: "Use when a data question is fuzzy or high-stakes — clarifies scope and writes analysis-spec.md before running a solver"
 ---
 
 # ds-clarify : resolve analytical intent before you compute

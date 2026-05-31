@@ -1,6 +1,6 @@
 ---
 name: ds-star
-description: "Solve data science tasks over one or many data files (CSV, JSON, Excel/XLSX, Markdown, TXT, SQLite, unstructured text) by writing and executing Python through an iterative plan, implement, execute, verify, refine loop with an LLM-as-judge sufficiency check. Use this skill WHENEVER the user asks a factoid or analytical question answered from data files, wants data wrangling/cleaning, EDA, statistics/hypothesis testing, a chart, or an ML prediction/submission produced FROM their data, especially when the answer requires reconciling MULTIPLE heterogeneous files, when the code runs but might still be wrong, or when a first attempt looks plausible but unverified. Trigger even if the user just drops files and asks what this says or to answer X from it, or uses words like analyze, compute, aggregate, join, merge, clean, summarize, predict, forecast, plot, or delta/total/top-N from the dataset. Do NOT use for prose writing, generic coding unrelated to a dataset, or questions answerable from general knowledge."
+description: "Use when analyzing data files with Python — baseline DS-STAR iterative loop with LLM-as-judge; prefer ds-star-plus for production work"
 ---
 
 # DS-STAR: Data Science Agent via Iterative Planning and Verification

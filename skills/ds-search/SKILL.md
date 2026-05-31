@@ -1,6 +1,6 @@
 ---
 name: ds-search
-description: "Standalone MCTS search-mode solver for a single hard data-science task. Use this skill WHENEVER a single task is hard enough to warrant tree search ('this task is hard, search harder', 'try multiple solution paths', 'tree search this', 'explore alternatives for this specific step'). Runs ds-star-plus in its optional MCTS search mode: introspective node expansion + hybrid LLM reward estimation. More expensive than a plain ds-star-plus run but finds better solutions on hard multi-step tasks. Composes with DAG planning (references/planning_graph.md). Do NOT use for routine single-answer questions — use ds-star-plus; do NOT use for ensemble confidence — use ds-spike."
+description: "Use when a single hard task keeps failing greedily — tree-searches alternative solution paths via MCTS mode"
 ---
 
 # ds-search : tree-search a single hard task with MCTS

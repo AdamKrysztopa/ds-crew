@@ -1,6 +1,6 @@
 ---
 name: ds-conduct
-description: "Data-aware orchestrator for the ds-crew suite. Use this skill WHENEVER the user is starting fresh with a dataset and is unsure where to begin ('where do I start with this data?', 'orchestrate the analysis', 'look at my data and tell me what to do', 'set up the analysis for me', 'I have a CSV, what should I do?'). Peeks at the data structure, asks data-driven questions (timestamps? join keys? prediction target?), assembles a concrete crew workflow plan, gets user approval, then executes with checkpoints at each handoff. This is the crew's conductor — it does NOT re-implement the skills it calls. Do NOT use if you already know exactly what analysis you need — call the specific skill directly."
+description: "Use when starting fresh with data and unsure which skills to use — peeks at data, asks targeted questions, assembles a crew plan"
 ---
 
 # ds-conduct : the crew's conductor

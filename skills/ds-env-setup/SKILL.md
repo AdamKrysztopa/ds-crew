@@ -1,6 +1,6 @@
 ---
 name: ds-env-setup
-description: "Set up or repair the Python environment for ds-crew analysis skills. Use this skill WHENEVER the user wants to prepare their project's Python environment ('set up env', 'install dependencies', 'prepare environment', 'I can\\'t run the analysis', 'missing pandas', 'env setup'), or when an analysis skill fails with an ImportError. Checks Python availability (stops if absent), detects the project's env manager (uv/venv/conda/poetry/pipenv), installs pandas + openpyxl + matplotlib into that env, and offers a SessionStart hook for proactive future warnings. Do NOT use to install ds-crew itself — see the README Installation section for that."
+description: "Use when setting up or repairing the Python env for analysis — detects uv/venv/conda/poetry/pipenv, installs core packages"
 ---
 
 # ds-env-setup : prepare your project's Python environment
