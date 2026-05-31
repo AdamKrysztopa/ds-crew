@@ -156,6 +156,8 @@ a stray `?`/`NEW`/`-` sentinel). So when any script raises:
 Apply the same to the Stage-1 analyzer scripts (there, fix using only the trimmed traceback,
 since descriptions don't exist yet).
 
+Execution policy + provenance: see `../ds-star-plus/references/sandbox.md`.
+
 ---
 
 ## Quick reference: the agent roles

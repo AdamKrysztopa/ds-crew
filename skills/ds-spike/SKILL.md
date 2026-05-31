@@ -47,6 +47,8 @@ Sonnet), strategy/persona (cautious statistician · ML-first · SQL/join-first �
 and random seed. Each runs in isolation (use the parallel-agent dispatch machinery) against the
 same spec and data.
 
+Execution policy + provenance: see `../ds-star-plus/references/sandbox.md`.
+
 ### Stage 3 — Collect on the blackboard
 
 Each solver posts a record: `{id, answer, sufficient, final_code, key_assumptions}`. Keep them
