@@ -1,5 +1,10 @@
 # Data-science skill suite for Claude Code
 
+[![CI](https://github.com/AdamKrysztopa/ds-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/AdamKrysztopa/ds-crew/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2)
+![version](https://img.shields.io/badge/version-1.2.1-informational)
+
 > **Fourteen installable Claude Code skills** for end-to-end data science, built on the DS-STAR agent
 > (Nam et al., 2025) and follow-on research — answering analytical questions over data files by
 > writing and executing Python through an iterative loop that **never trusts code just because it
