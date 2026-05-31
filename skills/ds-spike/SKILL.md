@@ -41,6 +41,8 @@ solver gets the identical spec.
 
 ### Stage 2 — Dispatch N diverse solvers
 
+**Cost guardrail (default on):** Before launching N agents, estimate N× cost. If the estimate exceeds $1.00 or ~200k tokens, confirm with the user first. After the run, report actual `cost_usd` from each solver manifest. See `references/cost_guardrails.md` for the full pattern.
+
 Launch N parallel `ds-star-plus` runs that differ **deliberately** — diversity is what makes an
 ensemble beat one run. Vary along the axes in `references/personas.md`: model tier (Opus vs
 Sonnet), strategy/persona (cautious statistician · ML-first · SQL/join-first · assumption-minimal),
