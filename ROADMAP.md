@@ -265,3 +265,49 @@ foundational pieces, not after the entire backlog.
 Open decisions before building: (1) A2 default-off vs cut entirely; (2) final skill names
 (`ds-clarify`, `ds-spike`?); (3) whether `ds-clarify` writes its spec into the same data dir the
 DS-STAR skills read from; (4) `ds-spike` default N and its diversity axes (model × persona × seed).
+
+---
+
+## Phase 4 — Speculative (deferred until a real user pulls)
+
+These are gated — not built until evidence of demand arrives. Recorded here to prevent
+premature re-addition later.
+
+### Time-series / geospatial modes
+**Pattern:** fold time-series and geospatial support into `ds-model` / `eda-narrative`
+as *modes* (opt-in flags at invocation), never as new top-level skills.
+**Why deferred:** premature without a target user; would re-bloat the skill list.
+**Gate:** a user with a genuine temporal or geospatial analysis task who finds the
+current skills insufficient.
+
+### Collaboration / session sharing
+**Pattern:** lean on `ds-clarify`'s versioned `analysis-spec.md` as the shared artifact
+rather than building session infrastructure.
+**Why deferred:** heavy to build; the spec-file approach already enables async hand-offs.
+**Gate:** multi-user demand that the spec-file approach cannot satisfy.
+
+### Community skill templates
+**Pattern:** add `CONTRIBUTING.md` + one template skill directory so external contributors
+can add skills in the right shape.
+**Why deferred:** zero forks today; the maintenance cost of a contribution process
+exceeds the benefit at current scale.
+**Gate:** first external fork or pull request.
+
+---
+
+## Explicitly skip (permanent)
+
+These are architectural decisions, not deferrals. Revisiting them requires changing
+the repo's foundational principles.
+
+- **LangChain / LangGraph / CrewAI / any external agent framework** — permanent no
+  (Principle 0: Claude-native only). A design boundary, not a "later."
+- **Bundling any data-science library as a ds-crew dependency** — permanent no
+  (Principle 1). The plugin installs clean on any machine; library choices belong to
+  the project env, not the plugin.
+- **Notion / cloud-storage export** — thin payoff, rabbit hole; not planned.
+- **New top-level skills beyond 14** until the benchmark justifies existing ones
+  (Principle 4: streamline beats add).
+- **BI/dashboard generation, agentic SQL warehouse connectors, active-learning**
+  — noted but not in scope.
+- **Retraining / fine-tuning any model** — all patterns are inference-time.
