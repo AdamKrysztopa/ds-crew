@@ -1,5 +1,5 @@
 {
-  "name": "ds-star",
+  "name": "ds-crew",
   "owner": {
     "name": "Adam Krysztopa",
     "email": "krysztopa@gmail.com"
@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "ds-star",
+      "name": "ds-crew",
       "source": "./",
       "description": "A suite of recent data-science skills: ds-star & ds-star-plus (iterative verified solving with a rubric-graded LLM-as-judge), ds-clarify (human-in-the-loop spec), ds-spike (multi-data-scientist ensemble), data-profile, and eda-narrative.",
       "version": "1.1.0",

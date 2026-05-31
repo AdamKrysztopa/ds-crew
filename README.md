@@ -21,20 +21,20 @@ like wrong filters, missing joins, and format mismatches before they reach you.
 ### 1. Add the marketplace (one-time per machine)
 
 ```bash
-claude plugin marketplace add AdamKrysztopa/ds-stats-with-claude
+claude plugin marketplace add AdamKrysztopa/ds-crew
 ```
 
 ### 2. Install the plugin — choose your scope
 
 ```bash
 # All your projects
-claude plugin install ds-star@ds-star --scope user
+claude plugin install ds-crew@ds-crew --scope user
 
 # This project only (saved to .claude/settings.json)
-claude plugin install ds-star@ds-star --scope project
+claude plugin install ds-crew@ds-crew --scope project
 
 # Local override, not committed
-claude plugin install ds-star@ds-star --scope local
+claude plugin install ds-crew@ds-crew --scope local
 ```
 
 ### 3. Use
@@ -56,8 +56,8 @@ automatically.
 ### Updating / uninstalling
 
 ```bash
-claude plugin update ds-star@ds-star
-claude plugin uninstall ds-star@ds-star
+claude plugin update ds-crew@ds-crew
+claude plugin uninstall ds-crew@ds-crew
 ```
 
 ---
@@ -116,7 +116,7 @@ runs it 3× with majority vote on borderline calls.
 ## Repository layout
 
 ```
-ds-stats-with-claude/
+ds-crew/
 ├── skills/
 │   ├── ds-star/                    baseline — faithful paper implementation
 │   │   ├── SKILL.md · references/{prompts,worked_example}.md · scripts/analyze_file.py
