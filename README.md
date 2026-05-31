@@ -70,6 +70,8 @@ claude plugin update ds-crew@ds-crew
 claude plugin uninstall ds-crew@ds-crew
 ```
 
+> **After installing or updating:** Start a new Claude Code session (or `/restart`) before using the skills — the plugin cache is loaded at session start, so new skills and skill updates are not available until the next session.
+
 ---
 
 ## The fourteen skills
