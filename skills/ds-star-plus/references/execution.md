@@ -84,3 +84,26 @@ if not ok:
 Always invoke scripts through the project runner (`uv run python script.py` under uv, or
 with the activated venv) so `sys.executable` resolves correctly to the environment where
 your packages live.
+
+---
+
+## Large inputs — recommend, don't depend
+
+When a file is large (rule of thumb: > 1 GB or > available RAM), ds-star-plus *recommends
+in its planning prompt* that the solver's code use a memory-efficient tool — **if that
+tool is available in the project env**. ds-crew installs nothing.
+
+Recommendations by situation:
+
+| Situation | Recommended tool (if available) |
+|---|---|
+| Large CSV/Parquet, SQL-style aggregation | DuckDB (`import duckdb`) — columnar, in-process, no server |
+| Wide DataFrames, slow pandas ops | Polars (`import polars as pl`) — lazy evaluation, streaming |
+| Chunked iteration | pandas `chunksize=` parameter — always available |
+
+**How to surface this in the plan:** "The input file is large. If `duckdb` is importable,
+use it for the join/aggregation — it handles out-of-core data and is much faster than
+pandas for this operation."
+
+**The line:** tools the solver's code invokes = fine; anything ds-crew itself must install
+to function = out (Principle 1).
