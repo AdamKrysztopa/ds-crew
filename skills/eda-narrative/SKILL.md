@@ -58,6 +58,8 @@ A readable narrative report (markdown + chart files) where every claim is backed
 caveats are explicit. If a finding raises a precise question worth nailing down, hand it to
 `ds-clarify` → `ds-star-plus`.
 
+Offer the narrative as a Markdown report (and optional self-contained HTML) per `../ds-star-plus/references/export.md`. Write to the run dir alongside any charts.
+
 ## Quick reference
 
 Report structure + the exploratory passes: `references/report_structure.md`.
