@@ -146,6 +146,7 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
    failures).
 
 Execution policy + provenance: see `references/sandbox.md`.
+Two execution modes (script default / kernel opt-in): see `references/execution.md`.
 
 ## Early-exit guardrail (cost)
 
