@@ -104,7 +104,7 @@ claude plugin uninstall ds-crew@ds-crew
 
 > **Advanced primitives** (`ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`, `ds-memory`): invoke directly only when you have a specific need — checking an answer, reconciling existing results, or inspecting the memory store. Most users start at `/ds-conduct`.
 
-> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)** · [Config profiles](docs/profiles.md)
+> **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)** · [Config profiles](docs/profiles.md) · [Demo datasets](docs/datasets.md)
 
 **Typical flow for something important:** `ds-conduct` (orchestrates the whole crew) → `data-profile` → `ds-clarify` → `ds-spike` (ensemble) → reconciled answer. See [docs/USAGE.md](docs/USAGE.md) for all routing options.
 
