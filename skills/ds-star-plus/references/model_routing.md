@@ -1,3 +1,53 @@
+## Reusable helper
+
+Any skill or caller can import `pick_model` from `scripts/route_model.py` to apply consistent
+cost-tiered routing without duplicating the logic:
+
+```python
+from route_model import pick_model
+
+pick_model(role, attempt=1, oscillating=False, hard=False)
+```
+
+**Arguments:**
+
+| Argument | Type | Default | Semantics |
+|----------|------|---------|-----------|
+| `role` | `str` | required | One of the keys in the DEFAULT table below (`"analyzer"`, `"planner_init"`, `"planner_next"`, `"coder"`, `"verifier"`, `"router"`, `"finalizer"`, `"debug_trim"`, `"debug_fix"`) |
+| `attempt` | `int` | `1` | 1-based try count at the same sub-goal. Each failed attempt beyond the first bumps one tier (Haiku→Sonnet, Sonnet→Opus). |
+| `oscillating` | `bool` | `False` | True when the same step has been truncated twice. Forces `planner_next`, `router`, `coder`, and `debug_fix` to Opus. |
+| `hard` | `bool` | `False` | True when the caller already knows the task is hard. Nudges one tier up regardless of attempt count. |
+
+**Tier table (current model ids):**
+
+| Tier | Model id | Default roles |
+|------|----------|---------------|
+| Haiku | `claude-haiku-4-5` | `analyzer`, `planner_init`, `finalizer`, `debug_trim` |
+| Sonnet | `claude-sonnet-4-6` | `planner_next`, `coder`, `router`, `debug_fix` |
+| Opus | `claude-opus-4-8` | `verifier` (always) |
+
+**Escalation ladder:**
+
+1. Role starts on its default tier.
+2. `attempt > 1` → bump one tier per failed attempt beyond the first.
+3. `oscillating=True` → force `planner_next`, `router`, `coder`, `debug_fix` to Opus.
+4. `hard=True` → nudge one tier up (applied after attempt escalation).
+5. `verifier` is always Opus regardless of any argument.
+
+**Examples:**
+
+```python
+pick_model("verifier")                       # -> 'claude-opus-4-8'  (always)
+pick_model("coder")                          # -> 'claude-sonnet-4-6'
+pick_model("coder", attempt=2)               # -> 'claude-opus-4-8'  (escalated)
+pick_model("analyzer")                       # -> 'claude-haiku-4-5'
+pick_model("planner_next", attempt=2)        # -> 'claude-opus-4-8'  (escalated)
+pick_model("router", oscillating=True)       # -> 'claude-opus-4-8'  (oscillation)
+pick_model("finalizer", hard=True)           # -> 'claude-sonnet-4-6' (nudged)
+```
+
+---
+
 # Model-tier routing policy (v2)
 
 The principle: **spend reasoning budget on judgment, not on plumbing.** Route each role to the
