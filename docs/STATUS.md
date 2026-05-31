@@ -17,7 +17,7 @@ Legend: ✅ done · 🟡 partial (unit/eval tests only, no external benchmark) �
 | ds-reconcile (Track L) | ✅ | ⬜ pending Phase 1 benchmark | — |
 | ds-vote (Track L) | ✅ | ⬜ pending Phase 1 benchmark | — |
 | ds-search (Track L) | ✅ | ⬜ pending Phase 1 benchmark | — |
-| data-profile | ✅ | ⬜ pending Phase 1 benchmark | — |
+| data-profile | ✅ | 🟡 PII heuristic unit tests | `skills/data-profile/scripts/test_detect_pii.py` |
 | eda-narrative | ✅ | ⬜ pending Phase 1 benchmark | — |
 | ds-env-setup | ✅ | 🟡 unit tests | `skills/ds-env-setup/scripts/test_check_env.py` |
 
@@ -29,3 +29,12 @@ These metadata items require manual action on GitHub:
 
 - **Repository description:** "Fourteen data-science skills for Claude Code — iterative, rubric-verified solving, ensembling, orchestration, and more. Grounded in DS-STAR and follow-on research."
 - **Topics:** `claude-code`, `data-science`, `agent`, `ds-star`, `llm-agent`, `automl`
+
+## Final Plan execution summary (2026-05-31)
+
+- Phase 0 ✅ — credibility foundations complete
+- Phase 1 🟡 — instrumentation complete; external benchmark deferred
+- Phase 2 ✅ — front door + profiles + USAGE.md streamlined
+- Phase 3 ✅ — multimodal, export, viz, big-data guidance added
+- Phase 4 ⬜ — speculative backlog recorded in ROADMAP.md
+- Safety ✅ — PII detection, cost guardrails added

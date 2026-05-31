@@ -1,5 +1,18 @@
 # Roadmap — toward a suite of recent data-science skills
 
+## Final Plan execution status (feat/final-plan-phases-0-4)
+
+| Phase | Status | Notes |
+|---|---|---|
+| Phase 0 — Credibility foundations | ✅ Done | LICENSE, citation audit (all 21 OK), implemented-vs-validated status, frontmatter + manifest CI, GitHub Actions, badges, demo recipe |
+| Phase 1 — Prove it works | 🟡 Partial | Cost/token/latency instrumentation in run_manifest.py shipped; external DABStep benchmark deferred (see `skills/ds-star-plus/references/benchmark.md`) |
+| Phase 2 — Make it usable | ✅ Done | Front door (ds-conduct), config profiles (quick/exploratory/production-audit), USAGE.md + README updated; no skills deleted |
+| Phase 3 — Extend reach | ✅ Done | Multimodal, export, visualization, big-data guidance all folded into existing skills; no new top-level skills, no bundled libs |
+| Phase 4 — Speculative | ⬜ Backlog | Time-series/geo modes, collab, community templates — recorded as gated items |
+| Cross-cutting safety | ✅ Done | PII detection in data-profile, ensemble cost guardrails in ds-spike + ds-search |
+
+---
+
 This repo started as a faithful implementation of DS-STAR (`ds-star`) plus a reliability- and
 cost-hardened successor (`ds-star-plus`). This document plans the tracks below:
 
