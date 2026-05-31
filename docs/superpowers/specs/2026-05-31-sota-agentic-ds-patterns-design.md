@@ -34,6 +34,8 @@ Patterns that are **missing or only partial**, each promoted to a track:
 | **I** | **Multi-agent debate / iterative critique** | `ds-spike` reconciliation is one-shot aggregation |
 | **J** | **Safe sandboxed execution + provenance/lineage** | implicit; no run-manifest or isolation guarantees |
 | **K** | **Data-aware orchestrator** (supervisor over the crew) | no entry-point that looks at data, grills, then conducts the right skills |
+| **L** | **Standalone primitives** — embedded building blocks exposed as their own skills | rubric verification / routing / N-vote / MCTS search / blackboard reconciliation are usable *only* inside `ds-star-plus`/`ds-spike` |
+| **M** | **Suite usage guide** — "what is what, when to use which" | only scattered across per-skill descriptions; no single chooser |
 
 ---
 
@@ -45,6 +47,12 @@ Patterns that are **missing or only partial**, each promoted to a track:
   **E** `ds-memory` substrate (installable, but primarily a shared store).
 - **Mode added to an existing skill:** **I** debate inside `ds-spike`.
 - **Cross-cutting reference:** **J** sandbox/provenance, shared by all solvers.
+- **Standalone primitives (L):** surface the patterns embedded in `ds-star-plus` /
+  `ds-spike` as their own thin, independently-invocable skills, reusing the
+  existing scripts (`verify_schema.py`, `route_model.py`, `aggregate.py`,
+  `search_mode.md`) rather than re-implementing them.
+- **Documentation deliverable (M):** one "when to use which" chooser doc, built
+  last so it can describe the whole suite.
 
 ---
 
@@ -204,6 +212,59 @@ pattern, MetaGPT `⚠2308.00352`.
 `data-profile`, `ds-clarify`, `ds-spike` (+I), benefits from E. **Risk.** medium —
 scope creep; keep it a *conductor*, not a re-implementation of the skills it calls.
 
+### Track L — standalone primitives (expose the embedded building blocks)
+
+**Pattern.** The reliability primitives currently live only *inside* the bigger
+skills. Surface each as an independently-invocable skill so it can be used on a
+result produced anywhere — not just mid-loop.
+
+**Grounding.** Same sources as their parents: DeepVerifier (`2601.15808`),
+blackboard (`2510.01285`), I-MCTS (`2502.14693`) / SWE-Search (`2410.20285`),
+self-consistency `⚠2203.11171`.
+
+**Delivery (each reuses an existing script; minimal new code):**
+- **`ds-verify`** — standalone rubric-decomposed verifier. Input: a question (or an
+  `analysis-spec.md`) + a candidate answer (+ optional code/data); output: the
+  graded `{score 1–4, rubric, checks, reason, missing}`. Reuses
+  `ds-star-plus/scripts/verify_schema.py` + `references/{rubric,prompts}.md`.
+  *Use when:* you have an answer from anywhere and want it independently checked.
+- **`ds-vote`** — self-consistency N-vote: run one solver N times (varied seed),
+  report majority answer + agreement rate. The cheap cousin of `ds-spike` (no
+  persona diversity, no debate). *Use when:* a quick confidence check, not a full
+  ensemble.
+- **`ds-search`** — the intra-agent MCTS search mode as a standalone solver for a
+  single hard task. Reuses `ds-star-plus/references/search_mode.md`. *Use when:*
+  one task is hard enough to warrant search but you don't need the crew.
+- **`ds-reconcile`** — blackboard reconciliation standalone: given candidate answers
+  you already have (+ optional code/assumptions), cluster, score (via `ds-verify`),
+  emit consensus + minority report. Reuses `ds-spike/scripts/aggregate.py`.
+  *Use when:* several analyses already exist and you want them reconciled.
+- **`ds-route`** — cost-tiered routing exposed as a **documented, reusable helper**
+  (promote `route_model.py` + a `references/` pattern doc). *Likely a utility/
+  reference rather than a slash command* — final form decided in the plan (see §8).
+
+**Effort.** Small–medium total (mostly packaging + descriptions). **Deps.** the
+underlying components already exist; `ds-reconcile` uses `ds-verify`. **Risk.** low.
+**Guard against over-fragmentation:** each must earn its place; fold `ds-route` into
+a utility if it doesn't merit a command.
+
+### Track M — suite usage guide ("what is what, when to use")
+
+**Pattern.** A single chooser so a newcomer can pick the right skill in seconds.
+
+**Delivery.**
+- `docs/USAGE.md` — (1) a **decision table** (skill → what it does → when to reach
+  for it → relative cost), (2) a **decision flowchart** (fuzzy request → `ds-conduct`;
+  precise question → `ds-star-plus`; high-stakes/contested → `ds-spike`; predictive
+  task → `ds-model`; just check an answer → `ds-verify`; onboarding data →
+  `data-profile`; explore → `eda-narrative`), and (3) the **canonical pipelines**
+  (e.g. `ds-conduct` → `data-profile` → `ds-clarify` → `ds-spike`).
+- Linked prominently from `README.md`; optional thin `/ds-help` skill that prints
+  the chooser (decided in the plan).
+
+**Grounding.** n/a (documentation). **Effort.** small. **Deps.** all other tracks
+(it documents them). **Risk.** none.
+
 ---
 
 ## 4. Sequencing (dependency-ordered)
@@ -211,17 +272,21 @@ scope creep; keep it a *conductor*, not a re-implementation of the skills it cal
 ```
 J (sandbox)──┐
 F (kernel)───┼─► G (DAG) ──► H (ds-model) ─┐
-E (memory)───┘                              ├─► K (ds-conduct)  ← capstone
+E (memory)───┘                              ├─► K (ds-conduct) ─► M (usage guide)
 I (debate, independent) ────────────────────┘
+L (standalone primitives) — low-risk packaging; slot anytime after the components exist
 ```
 
-Recommended build order: **J → F → G → E → H → I → K**.
+Recommended build order: **J → F → G → E → H → I → L → K → M**.
 - J first: safety/provenance underpins everything, lowest risk.
 - F before G: the graph executes against kernel state.
 - E lands as soon as a clean verdict exists to record (after F/G stabilize).
 - H needs F (and ideally G/E).
 - I is independent — can slot anytime.
-- K is last: it conducts all the above.
+- L is low-risk packaging of existing logic — can move earlier if convenient
+  (`ds-verify`/`ds-reconcile` only need scripts that already exist).
+- K is the capstone: it conducts all the above.
+- M is strictly last: it documents the whole finished suite.
 
 Each track is **its own commit/checkpoint** with its own docs delta, so the suite
 is shippable after any track.
@@ -230,9 +295,12 @@ is shippable after any track.
 
 ## 5. Cross-cutting docs & manifest updates (every track contributes)
 
-- **README.md** — "six skills" → eight user-facing (+`ds-model`, `ds-conduct`;
-  `ds-memory` as substrate). Update skill table, `/`-command list, "typical flow"
-  now led by `ds-conduct`, and the repo-layout tree.
+- **README.md** — "six skills" → the expanded roster (+`ds-model`, `ds-conduct`,
+  the Track-L primitives, `ds-memory` as substrate). Update skill table,
+  `/`-command list, "typical flow" now led by `ds-conduct`, the repo-layout tree,
+  and add a prominent link to the new `docs/USAGE.md` chooser (Track M).
+- **docs/USAGE.md (Track M)** — the authoritative "what is what / when to use"
+  chooser: decision table, decision flowchart, canonical pipelines.
 - **ROADMAP.md** — add Tracks E–K with rationale + status legend; update the
   "suggested order" and dependency graph.
 - **ARCHITECTURE.md** — new rows (kernel execution, DAG plan, debate); regenerate
@@ -257,7 +325,7 @@ reference.
 `⚠to-verify` IDs: 2409.07429 (AWM), 2305.16291 (Voyager), 2308.10144 (ExpeL),
 2402.01030 (CodeAct), 2402.18679 (Data Interpreter), 2502.13138 (AIDE),
 2410.20424 (AutoKaggle), 2410.02958 (AutoML-Agent), 2305.14325 (multi-agent
-debate), 2308.00352 (MetaGPT).
+debate), 2308.00352 (MetaGPT), 2203.11171 (self-consistency, Wang et al.).
 
 ---
 
@@ -280,3 +348,10 @@ debate), 2308.00352 (MetaGPT).
 3. `ds-conduct` autonomy after approval: full auto-run vs checkpoint at each
    handoff (leaning: checkpoint at each handoff, matching the human-in-the-loop
    ethos).
+4. Track L granularity: is `ds-route` a real slash-command skill or just a
+   documented shared utility? (Leaning: utility/reference — routing is a helper,
+   not a task.) And does `ds-vote` warrant its own skill or become a flag on
+   `ds-star-plus`? (Leaning: thin standalone skill for discoverability.)
+5. Track M: is `/ds-help` (a skill that prints the chooser) worth shipping, or is
+   `docs/USAGE.md` + README link enough? (Leaning: doc first; `/ds-help` only if
+   cheap.)
