@@ -61,11 +61,14 @@ Table 4 proved is critical. See `references/evidence.md` §1.
 `pick_model(role, attempt=N, oscillating=False, hard=False)` to get the model id to use for a
 given role and situation, so routing is consistent rather than ad hoc.
 
-### 2. Verifier returns a verdict AND a rationale AND what's missing
+### 2. Verifier returns a graded score, a rubric, a rationale AND what's missing
 
-In v1 the judge says only Yes/No. That makes false "sufficient" both common and silent. In
-v2 the verifier must return a small structured verdict: `sufficient` (bool), `reason` (one
-line), and `missing` (a list of what still needs to happen if not sufficient). Two payoffs:
+In v1 the judge says only Yes/No. That makes false "sufficient" both common and silent. v2.1
+makes the verdict structured and graded: a `score` (1–4), a fixed six-item `rubric` of the DS
+failure modes each marked pass/fail/na (see `references/rubric.md`), up to three decomposed
+`checks`, a one-line `reason`, and `missing` (what still needs to happen). The answer is
+sufficient ONLY when `score == 4` and no rubric item is `fail`. `scripts/verify_schema.py`
+parses and enforces this contract. Three payoffs:
 
 - The router and next planner step now condition on `missing`, so refinement targets the real
   gap instead of guessing.
@@ -131,8 +134,9 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
 1. **Analyze** every file (Haiku, parallel) → keep both a verbose description and a schema
    digest. Cache both. Retrieve/trim if it is a data lake.
 2. **Initialize** with one simple executable step (Haiku planner → Sonnet coder) and run it.
-3. **Verify** (Opus): get `{sufficient, reason, missing}`. Borderline/high-stakes → 3x vote.
-   Sufficient → Stage 5.
+3. **Verify** (Opus): get `{score, rubric, checks, reason, missing}` (validate with
+   `scripts/verify_schema.py`). Borderline/high-stakes → 3x vote. `score == 4` and no rubric
+   `fail` → Stage 5.
 4. **Route** (Sonnet, Opus if escalated): `Add Step` or `Step l`. On backtrack, truncate and
    regenerate with the anti-repeat list; detect oscillation and escalate/branch as above.
    Re-implement incrementally (Sonnet coder, full description only for touched files),
@@ -155,6 +159,8 @@ where the paper shows it pays. See `references/evidence.md` §6.
 Routing policy + model ids: `references/model_routing.md`.
 Paper-grounded justification for every v2 change (tables + numbers): `references/evidence.md`.
 Upgraded role prompts (structured verifier, anti-repeat planner): `references/prompts.md`.
+Verifier rubric (the six DS failure modes): `references/rubric.md`.
+Optional MCTS search mode for hard tasks: `references/search_mode.md`.
 Worked trace with backtracking: `references/worked_example.md`.
 Routing helper: `scripts/route_model.py`. File describer: `scripts/analyze_file.py`.
-Test cases: `evals/evals.json`.
+Verdict validator: `scripts/verify_schema.py`. Test cases: `evals/evals.json`.

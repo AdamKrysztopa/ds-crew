@@ -45,10 +45,20 @@ Opus=`claude-opus-4-8` (see `model_routing.md`).
 > answers the question — including correct scope, units, and required format. Code running is
 > NOT sufficient.
 > Plan: `{steps}`   Code: ```{code}```   Execution result: `{result}`   Question: `{question}`
+>
+> 1. Score the answer against the six DS failure modes (see `rubric.md`):
+>    wrong_column_or_value, dropped_rows, units_mismatch, scope_error, format_mismatch,
+>    question_substitution. Mark each `pass`, `fail`, or `na`.
+> 2. Write up to THREE targeted follow-up checks that most threaten THIS answer
+>    (e.g. "does the printed scope match the asked time window?") and answer each inline.
+> 3. Give a graded score: 1 = clearly wrong, 2 = mostly wrong, 3 = mostly right,
+>    4 = clearly sufficient. The answer is sufficient ONLY if score == 4 AND no rubric item
+>    is `fail`. Every `fail` item must also appear as a `missing` gap.
 > Return JSON only:
-> `{"sufficient": true|false, "reason": "<one line tying the printed output to the exact question, or why not>", "missing": ["<gap>", ...]}`
-> If sufficient, `reason` must name the output value and confirm it matches the question's
+> `{"score": 1|2|3|4, "rubric": {"wrong_column_or_value":"pass|fail|na","dropped_rows":"pass|fail|na","units_mismatch":"pass|fail|na","scope_error":"pass|fail|na","format_mismatch":"pass|fail|na","question_substitution":"pass|fail|na"}, "checks": ["<question -> answer>", ...], "reason": "<one line tying the printed output to the exact question, or why not>", "missing": ["<gap>", ...]}`
+> If score is 4, `reason` must name the output value and confirm it matches the question's
 > scope/units/format; if you cannot, it is NOT sufficient.
+> `scripts/verify_schema.py` validates this JSON and computes sufficiency — do not hand-roll it.
 
 ## Router — Sonnet (Opus if escalated)
 

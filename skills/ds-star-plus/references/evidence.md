@@ -65,6 +65,16 @@ self-consistency as the tool for high-stakes judgements — it lists *"self-cons
 techniques that harden multi-step pipelines in the Text-to-SQL related work (§2). v2 applies it
 to the one decision that can silently end the run: **3× majority vote on borderline verdicts.**
 
+**v2.1 extension (DeepVerifier, [2601.15808](https://arxiv.org/abs/2601.15808)).** DeepVerifier
+shows the binary judge is the weak link and replaces it with a rubric-guided, *decomposed*
+verifier: failures are pre-classified into a fixed taxonomy, verification is split into a few
+targeted follow-up checks rather than one holistic call, and the verdict is graded. It beats a
+vanilla LLM-judge by **12–48% F1**, lifting recall of catching wrong answers from **14% → 71%**
+(their GAIA-Web ablation) — with no training and at modest cost (decomposition stays to ≤3 checks).
+v2.1 ports this: a six-item DS-failure rubric (`references/rubric.md`), ≤3 decomposed `checks`, and
+a graded 1–4 `score` where sufficiency requires `score == 4` with no rubric `fail`. The contract is
+enforced by `scripts/verify_schema.py` so a malformed or over-optimistic verdict fails loudly.
+
 ## 3. Oscillation handling and the anti-repeat list
 
 **Paper baseline.** On a wrong step, the router truncates and the planner *regenerates by random

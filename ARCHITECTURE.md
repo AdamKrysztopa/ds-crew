@@ -33,7 +33,7 @@ centre, v1 details branch left, v2 details branch right. Read across any row to 
 | Initial step | one model | **Haiku** planner -> **Sonnet** coder |
 | Implement | one model, full descriptions re-fed each round | **Sonnet** coder; **digests** by default, full desc only for touched files |
 | Execute | run script | run script |
-| Verify | one model, **Yes/No** | **Opus**, returns `{sufficient, reason, missing}`; **3x vote** on borderline |
+| Verify | one model, **Yes/No** | **Opus**, returns graded `{score 1–4, rubric, checks, reason, missing}` (v2.1); sufficient iff `score 4` & no rubric `fail`; **3x vote** on borderline |
 | Route | one model: add / Step l | **Sonnet** (Opus if escalated); add / Step l |
 | Refine | truncate + regenerate | truncate + regenerate **with anti-repeat list**; oscillation -> Opus + 2-3 candidate branch |
 | Finalize | one model | **Haiku** (Sonnet if format complex) |
