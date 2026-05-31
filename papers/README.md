@@ -17,6 +17,17 @@ empirical-mcts-2602.04248.pdf 2602.04248
 agent-alpha-2602.02995.pdf 2602.02995
 swe-search-2410.20285.pdf 2410.20285
 blackboard-2510.01285.pdf 2510.01285
+awm-2409.07429.pdf 2409.07429
+voyager-2305.16291.pdf 2305.16291
+expel-2308.10144.pdf 2308.10144
+codeact-2402.01030.pdf 2402.01030
+data-interpreter-2402.18679.pdf 2402.18679
+aide-2502.13138.pdf 2502.13138
+autokaggle-2410.20424.pdf 2410.20424
+automl-agent-2410.02958.pdf 2410.02958
+multiagent-debate-2305.14325.pdf 2305.14325
+metagpt-2308.00352.pdf 2308.00352
+self-consistency-2203.11171.pdf 2203.11171
 EOF
 ```
 
@@ -52,3 +63,21 @@ EOF
 See [`../ROADMAP.md`](../ROADMAP.md) for how each of these maps to a concrete change in the
 skills, and [`../skills/ds-star-plus/references/evidence.md`](../skills/ds-star-plus/references/evidence.md)
 for how the *current* `plus` design is grounded in the DS-STAR paper.
+
+---
+
+## Patterns added in v1.2 (tracks E–M)
+
+| Paper | arXiv | What we take from it |
+|-------|-------|----------------------|
+| **Agent Workflow Memory** — Zora Zhiruo Wang et al. (CMU, 2024) | [2409.07429](https://arxiv.org/abs/2409.07429) | **Track E — workflow memory.** Induces reusable workflow snippets from past episodes and retrieves them at inference time; grounds the skill-memory / retrieval layer that persists hard-won sub-plans across runs. |
+| **Voyager: An Open-Ended Embodied Agent with Large Language Models** — Guanzhi Wang et al. (NVIDIA / Caltech, 2023) | [2305.16291](https://arxiv.org/abs/2305.16291) | **Track E — skill library.** Iteratively grows a versioned skill library via self-verification and curriculum; motivates storing and indexing verified code snippets as reusable skills across DS tasks. |
+| **ExpeL: LLM Agents Are Experiential Learners** — Andrew Zhao et al. (2023) | [2308.10144](https://arxiv.org/abs/2308.10144) | **Track E — experience distillation.** Collects success/failure trajectories and distills task-level rules; informs the rule-extraction mechanism that turns past DS runs into actionable heuristics. |
+| **Executable Code Actions Elicit Better LLM Agents (CodeAct)** — Xingyao Wang et al. (UIUC, 2024) | [2402.01030](https://arxiv.org/abs/2402.01030) | **Track F / J — code-as-action.** Replaces structured tool-calls with executable Python actions in a persistent interpreter; justifies the code-centric action space and stateful execution environment in DS agents. |
+| **Data Interpreter: An LLM Agent For Data Science** — Sirui Hong / MetaGPT team (2024) | [2402.18679](https://arxiv.org/abs/2402.18679) | **Track G — dynamic plan rewriting.** Hierarchical DAG plan that rewrites nodes on execution feedback; the key precedent for mid-task plan repair rather than full replanning when a step fails. |
+| **AIDE: AI-Driven Exploration in the Space of Code** — Zhengyao Jiang et al. (Weco AI, 2025) | [2502.13138](https://arxiv.org/abs/2502.13138) | **Track H — tree search over code drafts.** Tree search in solution-code space with greedy best-first selection and pruning; the primary reference architecture for the search-mode upgrade in competition settings. |
+| **AutoKaggle: A Multi-Agent Framework for Autonomous Data Science Competitions** — Ziming Li et al. (2024) | [2410.20424](https://arxiv.org/abs/2410.20424) | **Track H — competition pipeline.** End-to-end multi-agent loop for Kaggle (feature engineering → model selection → ensemble); blueprints the competition-mode orchestration layer. |
+| **AutoML-Agent: A Multi-Agent LLM Framework for Full-Pipeline AutoML** — Patara Trirat et al. (2024) | [2410.02958](https://arxiv.org/abs/2410.02958) | **Track H — full-pipeline AutoML.** Decomposes AutoML into specialized retrieval-augmented agents per stage (preprocessing, HPO, ensembling); informs modular agent hand-off design for end-to-end ML pipelines. |
+| **Improving Factuality and Reasoning in Language Models through Multiagent Debate** — Yilun Du et al. (MIT / CMU, 2023) | [2305.14325](https://arxiv.org/abs/2305.14325) | **Track I — debate for correctness.** Multiple LLM agents propose and critique answers across rounds, converging to more factual responses; grounds the debate / cross-checking layer in the ds-spike ensemble. |
+| **MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework** — Sirui Hong et al. (2023) | [2308.00352](https://arxiv.org/abs/2308.00352) | **Track K — role-based SOP agents.** Encodes human SOPs as agent roles with structured message passing; reference for assigning distinct analyst roles (data engineer, modeller, critic) within the ds-crew ensemble. |
+| **Self-Consistency Improves Chain of Thought Reasoning in Language Models** — Xuezhi Wang et al. (Google Brain, 2022) | [2203.11171](https://arxiv.org/abs/2203.11171) | **Track L — majority-vote sampling.** Samples diverse reasoning paths and marginalises over answers via majority vote; the theoretical basis for the ensemble-voting and answer-aggregation step in ds-spike / ds-star-plus. |
