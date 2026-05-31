@@ -1,6 +1,6 @@
 ---
 name: data-profile
-description: "Use when onboarding a dataset or asking 'what\'s in this data?' — per-column quality report with join-compatibility checks"
+description: "Use when onboarding a dataset or asking 'what\'s in this data?' — per-column quality report with join-compatibility checks; flags possible PII/sensitive columns"
 ---
 
 # data-profile : know the data before you trust it
@@ -23,6 +23,10 @@ load and *show* — actual column names, actual value spellings, actual dtypes �
 from the file name. Surfaced reality is the whole value.
 
 ## How to run it
+
+### Stage 0 — PII / sensitive-data scan
+
+**PII / sensitive-data scan:** Run `scripts/detect_pii.py`'s `scan_columns` over the loaded column names and a sample of values. If any column is flagged, surface it prominently (⚠️ possible PII in columns: ...) **before** any data is summarized or leaves the sandbox. Recommend masking, exclusion, or confirming with the data owner before proceeding. Note: this is a heuristic (false positives and negatives are possible).
 
 ### Stage 1 — Inventory
 
