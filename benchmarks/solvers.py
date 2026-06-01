@@ -130,9 +130,9 @@ class ClaudeCliSolver:
         )
         # Try to extract a run_manifest from the output if present,
         # otherwise build a minimal manifest from what we can parse
-        manifest_path = _json_find_in(result.stdout, "run_manifest") or {}
-        if not manifest_path:
+        manifest = _json_find_in(result.stdout, "run_manifest") or {}
+        if not manifest:
             # Fall back: extract answer from stdout text
             answer = result.stdout.strip()
             return {"answer": answer, "usage": {}, "rounds": 1}
-        return manifest_path
+        return manifest

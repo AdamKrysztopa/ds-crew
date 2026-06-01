@@ -32,9 +32,12 @@ def build_manifest(commit_sha, model_ids, prices, n, seed):
             "date": date.today().isoformat(), "n": n, "seed": seed}
 
 def main(results_path, summary_path, manifest_path, commit_sha, model_ids, prices, seed):
-    rows = [json.loads(l) for l in open(results_path)]
+    with open(results_path) as f:
+        rows = [json.loads(l) for l in f]
     summary = summarize(rows)
-    open(summary_path, "w").write(render_summary_md(summary))
+    with open(summary_path, "w") as f:
+        f.write(render_summary_md(summary))
     n = max((s["n"] for s in summary.values()), default=0)
-    json.dump(build_manifest(commit_sha, model_ids, prices, n, seed),
-              open(manifest_path, "w"), indent=2, sort_keys=True)
+    with open(manifest_path, "w") as f:
+        json.dump(build_manifest(commit_sha, model_ids, prices, n, seed),
+                  f, indent=2, sort_keys=True)
