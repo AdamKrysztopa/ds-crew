@@ -8,9 +8,8 @@ description: "Use when answering questions from data files (CSV/JSON/Excel/SQLit
 This is **v2** of the DS-STAR workflow. It keeps the proven core — never trust code just
 because it ran; grow a plan one *verified* step at a time — and adds four things the base
 method left on the table: a verifier that explains itself, model-tier routing so you spend
-big-model budget only where it pays, oscillation/escalation handling, and context caching to
-aim to reduce the input-token overhead the DS-STAR paper reports (Table 6: 154,669 vs 44,691
-tokens vs ReAct) — a design goal, not yet independently benchmarked. If you have not seen
+big-model budget only where it pays, oscillation/escalation handling, and context caching to target the ~3.5× input-token overhead the DS-STAR paper reports
+(Table 6: 154,669 vs 44,691 tokens vs ReAct) — a design goal, not yet independently benchmarked. If you have not seen
 the base method, the same six stages from `../ds-star/SKILL.md` apply; this file describes
 only what changes and why.
 

@@ -65,7 +65,7 @@ sticky for the whole task.
 
 ## Why these asymmetries hold (paper evidence)
 
-Both asymmetries above are grounded in the DS-STAR paper (Nam et al., 2025), not asserted: the cost
+Both asymmetries above are grounded in the DS-STAR paper (Nam et al., 2025), not yet independently benchmarked: the cost
 asymmetry in Table 6 (154,669 input tokens / $0.23 per task, 3.5× ReAct) and the correctness
 asymmetry in the Table 4 ablations (removing descriptions: hard 45.24 → 26.98; removing the router:
 45.24 → 39.95). The full mapping from each v2 change to its supporting table/number is in

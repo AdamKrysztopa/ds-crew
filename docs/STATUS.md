@@ -21,6 +21,8 @@ Legend: ✅ done · 🟡 partial (unit/eval tests only, no external benchmark) �
 | eda-narrative | ✅ | ⬜ pending Phase 1 benchmark | — |
 | ds-env-setup | ✅ | 🟡 unit tests | `skills/ds-env-setup/scripts/test_check_env.py` |
 
+> v2 changes are design extensions grounded in the DS-STAR paper, not yet independently benchmarked.
+
 ## Benchmark plan
 An external benchmark (DABStep) is planned for Phase 1. See `skills/ds-star-plus/references/benchmark.md` for the follow-up specification.
 
