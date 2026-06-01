@@ -1,0 +1,82 @@
+---
+name: ds-search
+description: "Use when a single hard task keeps failing greedily — tree-searches alternative solution paths via MCTS mode"
+---
+
+# ds-search : tree-search a single hard task with MCTS
+
+## When this applies
+
+Use ds-search when **one task is hard enough** that greedy refinement keeps oscillating or
+failing — the linear ds-star-plus loop has tried multiple rounds without reaching a sufficient
+answer and you want to explore alternative solution paths before committing to one.
+
+Good signals:
+- The planner keeps returning to the same failing approach
+- Multiple different implementations all fail the verifier on the same rubric item
+- The task has genuinely branching solution paths (e.g., SQL vs. pandas vs. join strategy)
+
+Do NOT use for:
+- Routine questions — the LLM call budget multiplies; use `ds-star-plus`.
+- Ensemble confidence — use `ds-spike` (persona diversity + debate).
+
+## The cardinal rule
+
+**Search multiplies LLM calls** (budget ≈ branching_factor × depth). Use it deliberately,
+not by default. The value-model pre-screen keeps it affordable — most candidate branches are
+pruned on a cheap estimate before execution — but even so, this is the most expensive mode
+in the suite. Apply it to the hard tail only.
+
+### Verifier-as-reward circularity (important)
+
+Both ds-spike and ds-search *score* candidate answers with the same A1-rubric verifier
+(`../ds-star-plus/scripts/verify_schema.py` + `../ds-star-plus/references/rubric.md`) they use *inside*
+each solver. A biased judge is therefore amplified, not caught — the meta-aggregator
+inherits the same blind spot as the solvers it is judging.
+
+**Rule:** the meta-aggregator MUST run on a **different model instance** (and preferably
+a different tier) than the in-solver verifier. Concretely: if solvers verify with Opus,
+the cross-run aggregator must be a separate Opus instance with an independent prompt, or
+a different model tier — never reuse the same verifier call or context. This is a
+mitigation, not a proof of independence.
+
+## How to run it
+
+**Cost guardrail:** MCTS search multiplies solver calls — apply the ensemble cost guardrail before starting. See `../ds-spike/references/cost_guardrails.md`.
+
+1. **Formulate the single hard task clearly** — one well-scoped question, with all relevant
+   data files and the desired output format specified.
+2. **Activate search mode** per `../ds-star-plus/references/search_mode.md`. Set:
+   - `branching_factor` — number of alternative continuations to generate per expansion
+     (cap at 3 per the budget note in search_mode.md)
+   - `max_depth` — maximum plan steps to explore before forcing termination
+3. **Run.** The search expands a tree of candidate solution steps. Each node is scored by
+   the hybrid reward: cheap LLM value estimate first, then replaced by the real verifier
+   verdict once executed.
+4. **Take the highest-scoring leaf** as the answer. If no leaf reached `score == 4` with
+   no rubric failures, report the best found and state that it did not fully pass.
+
+Selection strategy: pick the highest-value non-terminal leaf to expand next (greedy-on-value;
+UCT-style explore/exploit balance is optional at this scale). Stop on first sufficient node
+or when the global call budget is exhausted.
+
+## Output
+
+- **Best solution found** — the answer from the highest-scoring leaf in the search tree
+- **Verifier score** — the score (1–4) and rubric verdict for that leaf
+- **Paths explored** — a brief summary of how many branches were explored and which were
+  pruned early by the value estimate
+
+If the search terminates without a `score == 4` / no-fail result, say so explicitly and
+surface the best partial solution with its rubric failures.
+
+## Quick reference
+
+- Why this works + which paper mechanisms are/aren't engineered: `references/evidence.md`
+- Full MCTS protocol: `../ds-star-plus/references/search_mode.md`
+- DAG planning integration: `../ds-star-plus/references/planning_graph.md`
+- Verifier scoring: `../ds-star-plus/scripts/verify_schema.py` (`parse_verdict`,
+  `is_sufficient`)
+- Rubric reference: `../ds-star-plus/references/rubric.md`
+- Budget cap: branching_factor ≤ 3, total executions ≤ normal round budget (see
+  search_mode.md Budget note)

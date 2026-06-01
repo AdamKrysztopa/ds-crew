@@ -1,0 +1,18 @@
+.DS_Store
+**/.DS_Store
+.claude/settings.local.json
+
+# Reference papers: keep the index (papers/README.md) in git, but not the large PDFs
+papers/*.pdf
+
+local_tests/
+
+# Dataset downloads (never commit raw data)
+data/
+
+# Benchmark harness: ignore raw data + run outputs, but keep the committed smoke run
+benchmarks/data/*
+!benchmarks/data/.gitkeep
+benchmarks/runs/*
+!benchmarks/runs/.gitkeep
+!benchmarks/runs/smoke/

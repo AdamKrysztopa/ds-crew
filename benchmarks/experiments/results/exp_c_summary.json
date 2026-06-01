@@ -1,0 +1,15 @@
+{
+  "variant": "ds-spike-n3",
+  "n": 2,
+  "correct": 1,
+  "accuracy": 0.5,
+  "total_cost_usd": 1.9501,
+  "cost_per_task": 0.975,
+  "question_ids": [
+    "7",
+    "8"
+  ],
+  "wrong_ids": [
+    "8"
+  ]
+}

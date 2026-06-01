@@ -1,0 +1,31 @@
+{
+  "n": 18,
+  "variants": [
+    {
+      "variant": "ds-star-plugin",
+      "n": 18,
+      "accuracy": 0.944,
+      "accuracy_hard": 1.0,
+      "mean_field_score": 0.979,
+      "avg_turns": 4.28,
+      "cost_per_task": 0.3416,
+      "tokens_per_task": 125796,
+      "wrong_ids": [
+        "8"
+      ]
+    },
+    {
+      "variant": "ds-star-prompt",
+      "n": 18,
+      "accuracy": 0.944,
+      "accuracy_hard": 1.0,
+      "mean_field_score": 0.979,
+      "avg_turns": 3.89,
+      "cost_per_task": 0.3104,
+      "tokens_per_task": 116435,
+      "wrong_ids": [
+        "8"
+      ]
+    }
+  ]
+}
