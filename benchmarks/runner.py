@@ -28,3 +28,48 @@ def run_variant(variant, questions, solver, prices, out_path):
             }
             fh.write(json.dumps(row) + "\n")
     return out_path
+
+
+def load_dabench_questions(questions_path, labels_path, limit=None):
+    """Load and join DABench questions + labels into normalized dicts.
+
+    Normalized format: {id (str), question, files (list), label (str), fmt (str), hard (bool)}
+    Uses real field names from UPSTREAM_NOTES.md.
+    """
+    import json
+    # Load labels by id
+    labels = {}
+    with open(labels_path) as f:
+        for line in f:
+            rec = json.loads(line)
+            # common_answers is [[name, value], ...] — take first value
+            if rec.get("common_answers"):
+                labels[rec["id"]] = str(rec["common_answers"][0][1])
+            else:
+                labels[rec["id"]] = ""
+
+    questions = []
+    with open(questions_path) as f:
+        for line in f:
+            if limit and len(questions) >= limit:
+                break
+            q = json.loads(line)
+            qid = q["id"]
+            if qid not in labels:
+                continue
+            questions.append({
+                "id": str(qid),
+                "question": q["question"],
+                "files": [q["file_name"]] if q.get("file_name") else [],
+                "label": labels[qid],
+                "fmt": _extract_fmt_key(q.get("format", "")),
+                "hard": q.get("level") == "hard",
+            })
+    return questions
+
+
+def _extract_fmt_key(fmt_string):
+    """Extract the key name from a format string like '@mean_fare[mean_fare_value]' -> 'mean_fare'."""
+    import re
+    m = re.match(r"@(\w+)\[", fmt_string)
+    return m.group(1) if m else ""
