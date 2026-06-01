@@ -99,6 +99,25 @@ was used), plus a **run manifest** listing:
 
 ---
 
+## What this cannot guarantee
+
+This skill is markdown driving a model across a long context. No process can enforce
+that the verifier, routing, and oscillation-handling steps actually ran as specified.
+
+**Mitigation:** emit a structured `runlog.json` with these fields after each run:
+- `rounds` (int): number of loop iterations
+- `verifier_verdicts` (list): `[{"round": N, "score": 1-4}, ...]` for each round
+- `oscillated` (bool): whether oscillation was detected
+- `subrun_cost_usd` (list): cost per sub-run (ds-spike only; empty list for single-solver skills)
+
+Validate it:
+```bash
+python3 ../ds-spike/scripts/runlog.py runlog.json
+```
+
+If it reports errors, the loop was not followed; do not present the answer as verified.
+This makes deviations *detectable after the fact*, not *impossible*.
+
 ## Quick reference
 
 | Resource | Path |
