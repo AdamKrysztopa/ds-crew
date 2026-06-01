@@ -127,7 +127,7 @@ This makes deviations *detectable after the fact*, not *impossible*.
 ### Verifier-as-reward circularity (important)
 
 Both ds-spike and ds-search *score* candidate answers with the same A1-rubric verifier
-(`../ds-star-plus/scripts/verify_schema.py` + `references/rubric.md`) they use *inside*
+(`../ds-star-plus/scripts/verify_schema.py` + `../ds-star-plus/references/rubric.md`) they use *inside*
 each solver. A biased judge is therefore amplified, not caught — the meta-aggregator
 inherits the same blind spot as the solvers it is judging.
 
