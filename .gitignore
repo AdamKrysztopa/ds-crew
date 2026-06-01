@@ -9,3 +9,10 @@ local_tests/
 
 # Dataset downloads (never commit raw data)
 data/
+
+# Benchmark harness: ignore raw data + run outputs, but keep the committed smoke run
+benchmarks/data/*
+!benchmarks/data/.gitkeep
+benchmarks/runs/*
+!benchmarks/runs/.gitkeep
+!benchmarks/runs/smoke/
