@@ -14,7 +14,7 @@ jobs:
       - name: Run all skill unittest suites
         run: |
           fail=0
-          for d in skills/*/scripts scripts .github/workflows/scripts; do
+          for d in skills/*/scripts scripts .github/workflows/scripts benchmarks config; do
             if ls "$d"/test_*.py >/dev/null 2>&1; then
               echo "== $d =="
               (cd "$d" && python3 -m unittest -v) || fail=1
@@ -23,5 +23,7 @@ jobs:
           exit $fail
       - name: Lint SKILL.md frontmatter
         run: python3 .github/workflows/scripts/lint_frontmatter.py
+      - name: Check SKILL.md referenced paths resolve
+        run: python3 .github/workflows/scripts/check_skill_paths.py
       - name: Validate manifests
         run: python3 .github/workflows/scripts/validate_manifests.py
