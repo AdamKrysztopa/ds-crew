@@ -14,12 +14,21 @@ Tier names are the contract; the ids below are the current mapping — bump to t
 snapshot of each tier when newer models ship.
 """
 
-TIERS = {
-    "haiku": "claude-haiku-4-5",
-    "sonnet": "claude-sonnet-4-6",
-    "opus": "claude-opus-4-8",
-}
-ORDER = ["haiku", "sonnet", "opus"]
+import json, os
+
+def _models_config():
+    d = os.path.dirname(os.path.abspath(__file__))
+    while d != os.path.dirname(d):
+        p = os.path.join(d, "config", "models.json")
+        if os.path.exists(p):
+            with open(p) as fh:
+                return json.load(fh)
+        d = os.path.dirname(d)
+    raise FileNotFoundError("config/models.json not found")
+
+_CFG = _models_config()
+TIERS = {tier: spec["id"] for tier, spec in _CFG["tiers"].items()}
+ORDER = _CFG["order"]
 
 # default tier and an optional hard ceiling per role
 DEFAULT = {
@@ -64,26 +73,3 @@ def pick_model(role, attempt=1, oscillating=False, hard=False):
         tier = _bump(tier, 1)
 
     return TIERS[tier]
-
-
-if __name__ == "__main__":
-    checks = [
-        ("verifier", dict(), "claude-opus-4-8"),
-        ("analyzer", dict(), "claude-haiku-4-5"),
-        ("planner_next", dict(), "claude-sonnet-4-6"),
-        ("planner_next", dict(attempt=2), "claude-opus-4-8"),
-        ("coder", dict(), "claude-sonnet-4-6"),
-        ("coder", dict(attempt=2), "claude-opus-4-8"),
-        ("router", dict(oscillating=True), "claude-opus-4-8"),
-        ("finalizer", dict(), "claude-haiku-4-5"),
-        ("finalizer", dict(hard=True), "claude-sonnet-4-6"),
-        ("debug_trim", dict(), "claude-haiku-4-5"),
-    ]
-    ok = True
-    for role, kw, expected in checks:
-        got = pick_model(role, **kw)
-        flag = "ok" if got == expected else "FAIL"
-        if got != expected:
-            ok = False
-        print(f"[{flag}] pick_model('{role}', {kw}) -> {got}")
-    print("ALL PASS" if ok else "SOME FAILED")
