@@ -57,7 +57,8 @@ rubric-scored, decomposed one:
    a different question). This is DeepVerifier's "failure taxonomy → rubric" applied to data science.
 2. **Decomposition over holistic judgement.** Instead of one all-or-nothing verdict, emit ≤3
    targeted follow-up checks (e.g. "does the printed scope match the asked scope?", "are the units
-   the asked units?") and answer each — cheaper than re-judging the whole task.
+   the asked units?") and answer each — lower cost than re-judging the whole task (per DeepVerifier's
+   design rationale; not yet independently measured in ds-crew).
 3. **Graded 1–4 verdict** (1 = clearly wrong … 4 = clearly sufficient) instead of a bool, with
    early-stop when the verdict is confidently 4 and no rubric item fails. Maps cleanly onto the
    existing early-exit guardrail.

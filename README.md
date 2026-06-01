@@ -213,12 +213,13 @@ Nam, Yoon, Chen & Pfister (2025). *DS-STAR: Data Science Agent via Iterative Pla
 Verification.* arXiv:2509.21825. Google Cloud / KAIST.
 
 The v2 additions (model routing, structured verifier, oscillation handling, digest caching,
-two-stage retrieval) are design extensions: there is no new independent benchmark, but each is
-justified against a specific finding in the paper — the 3.5× input-token cost (Table 6), the
-analyzer/router ablations (Table 4, e.g. hard accuracy 45.24 → 26.98 without descriptions), the
-~8-point retrieval-vs-oracle gap (Table 2), and the round distribution (§4.3). The full evidence
-chain is in `skills/ds-star-plus/references/evidence.md`; `skills/ds-star-plus/evals/evals.json`
-provides checkable test cases.
+two-stage retrieval) are design extensions grounded in the DS-STAR paper, not yet independently
+benchmarked. Each change is justified against a specific finding in the paper — the 3.5×
+input-token cost (Table 6: 154,669 vs 44,691 tokens vs ReAct), the analyzer/router ablations
+(Table 4, e.g. hard accuracy 45.24 → 26.98 without descriptions), the ~8-point
+retrieval-vs-oracle gap (Table 2), and the round distribution (§4.3). The full evidence chain is
+in `skills/ds-star-plus/references/evidence.md`; `skills/ds-star-plus/evals/evals.json` provides
+checkable test cases.
 
 ## Status
 

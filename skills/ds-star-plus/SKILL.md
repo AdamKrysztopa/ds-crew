@@ -9,8 +9,13 @@ This is **v2** of the DS-STAR workflow. It keeps the proven core — never trust
 because it ran; grow a plan one *verified* step at a time — and adds four things the base
 method left on the table: a verifier that explains itself, model-tier routing so you spend
 big-model budget only where it pays, oscillation/escalation handling, and context caching to
-cut the ~3.5x token overhead. If you have not seen the base method, the same six stages from
-`../ds-star/SKILL.md` apply; this file describes only what changes and why.
+aim to reduce the input-token overhead the DS-STAR paper reports (Table 6: 154,669 vs 44,691
+tokens vs ReAct) — a design goal, not yet independently benchmarked. If you have not seen
+the base method, the same six stages from `../ds-star/SKILL.md` apply; this file describes
+only what changes and why.
+
+> **v2 changes are design extensions grounded in the DS-STAR paper, not yet independently
+> benchmarked.** See `references/evidence.md` for the full paper-to-change mapping.
 
 Read `references/model_routing.md` for the full routing policy and `references/prompts.md`
 for the upgraded role prompts. A worked trace is in `references/worked_example.md`. Every change
