@@ -8,10 +8,19 @@
 import hashlib, json, os
 from datetime import datetime, timezone
 
-_RATES_PER_MTOK = {  # USD per 1M tokens (input, output); update as pricing changes
-    "claude-haiku-4-5":  (1.0,  5.0),
-    "claude-sonnet-4-6": (3.0, 15.0),
-    "claude-opus-4-8":  (15.0, 75.0),
+def _models_config():
+    d = os.path.dirname(os.path.abspath(__file__))
+    while d != os.path.dirname(d):
+        p = os.path.join(d, "config", "models.json")
+        if os.path.exists(p):
+            with open(p) as fh:
+                return json.load(fh)
+        d = os.path.dirname(d)
+    raise FileNotFoundError("config/models.json not found")
+
+_RATES_PER_MTOK = {
+    spec["id"]: (spec["price_per_mtok"]["input"], spec["price_per_mtok"]["output"])
+    for spec in _models_config()["tiers"].values()
 }
 
 def estimate_cost(model, usage):
@@ -43,4 +52,5 @@ def write_manifest(manifest, run_dir):
     return path
 
 if __name__ == "__main__":
-    print(build_manifest("demo", "print(1)", ["a.csv"], "1", {"score": 4}, "claude-sonnet-4-6"))
+    model = next(iter(_RATES_PER_MTOK))
+    print(build_manifest("demo", "print(1)", ["a.csv"], "1", {"score": 4}, model))
