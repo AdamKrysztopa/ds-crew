@@ -85,24 +85,35 @@ claude plugin uninstall ds-crew@ds-crew
 
 **New here?** Start with a [config profile](docs/profiles.md) or run `/ds-conduct` — it inspects your data and routes automatically. See [docs/USAGE.md](docs/USAGE.md) for the full chooser.
 
+### Core 5 — everyday entry points (reach for these first)
+
+These five skills cover the full daily workflow: orchestrate, solve, ensemble, profile, and explore.
+
 | skill | what it does | reach for it when |
 |-------|--------------|-------------------|
-| **`ds-star`** | Baseline iterative solver — analyze files → grow a verified plan one step at a time | reproducing the paper; a simple, single-model baseline |
+| **`ds-conduct`** | Data-aware orchestrator — peeks at data, grills, assembles + executes a crew workflow | Starting fresh with data; fuzzy request; don't know which skills to use |
 | **`ds-star-plus`** | Hardened solver: per-role Haiku/Sonnet/Opus routing, **rubric-graded verifier**, oscillation handling, digest caching, two-stage retrieval, optional MCTS search mode | production, multi-file, cost-sensitive, high-reliability work |
-| **`ds-clarify`** | Human-in-the-loop pre-flight — interrogate intent, write `analysis-spec.md` | the question is fuzzy, high-stakes, or contested — run it **before** a solver |
 | **`ds-spike`** | Ensemble — N diverse data scientists in parallel, reconciled into consensus + minority report | a number that must be right; two runs disagreed (costs N× — spend for confidence) |
 | **`data-profile`** | Standalone data-quality / profiling report (per-column + cross-file join checks) | onboarding a dataset; "is this data clean / what's in it?" |
 | **`eda-narrative`** | Exploration → a stakeholder-ready narrative, each finding backed by a number/chart | "what's interesting here?" with no single precise question |
-| **`ds-conduct`** | Data-aware orchestrator — peeks at data, grills, assembles + executes a crew workflow | Starting fresh with data; fuzzy request; don't know which skills to use |
+
+### Advanced 9 — power users and specific needs
+
+These skills serve specific needs: paper reproduction, pre-flight spec-writing, AutoML, memory, environment setup, and fine-grained control over the verification and search primitives.
+
+> The four Track-L primitives (`ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`) are extracted internals of `ds-star-plus`/`ds-spike`, surfaced standalone for power users who need fine-grained control.
+
+| skill | what it does | reach for it when |
+|-------|--------------|-------------------|
+| **`ds-star`** | Baseline iterative solver — analyze files → grow a verified plan one step at a time | reproducing the paper; a simple, single-model baseline |
+| **`ds-clarify`** | Human-in-the-loop pre-flight — interrogate intent, write `analysis-spec.md` | the question is fuzzy, high-stakes, or contested — run it **before** a solver |
 | **`ds-model`** | AutoML solution-tree — AIDE-style draft→train→eval→improve loop with leakage/CV discipline | Predict/forecast; Kaggle; improve model accuracy |
-| **`ds-verify`** | Standalone rubric verifier — grades any answer against the 6 DS failure modes | Check/audit any result from any source |
-| **`ds-reconcile`** | Blackboard reconciliation — clusters existing answers into consensus + minority report | Already have multiple answers; want them reconciled |
-| **`ds-vote`** | Self-consistency N-vote — same solver N times, majority answer + stability | Quick stability check; moderate-stakes question |
-| **`ds-search`** | Standalone MCTS search — tree-search a single hard task | One task keeps failing greedy; want alternative solution paths |
 | **`ds-memory`** | Persistent recipe store — remember and reuse what worked across sessions | Inspect/prune past analyses; seed new runs from history |
 | **`ds-env-setup`** | Set up / verify the Python env — detects uv/venv/conda/poetry/pipenv, installs core packages, offers a SessionStart hook | Before first analysis; after changing env; `ImportError` during a run |
-
-> **Advanced primitives** (`ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`, `ds-memory`): invoke directly only when you have a specific need — checking an answer, reconciling existing results, or inspecting the memory store. Most users start at `/ds-conduct`.
+| **`ds-verify`** | Standalone rubric verifier — grades any answer against the 6 DS failure modes (extracted internal of `ds-star-plus`/`ds-spike`) | Check/audit any result from any source |
+| **`ds-reconcile`** | Blackboard reconciliation — clusters existing answers into consensus + minority report (extracted internal) | Already have multiple answers; want them reconciled |
+| **`ds-vote`** | Self-consistency N-vote — same solver N times, majority answer + stability (extracted internal) | Quick stability check; moderate-stakes question |
+| **`ds-search`** | Standalone MCTS search — tree-search a single hard task (extracted internal of `ds-star-plus`) | One task keeps failing greedy; want alternative solution paths |
 
 > **→ [Which skill should I use? See docs/USAGE.md](docs/USAGE.md)** · [Config profiles](docs/profiles.md) · [Demo datasets](docs/datasets.md)
 

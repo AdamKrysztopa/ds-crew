@@ -5,6 +5,18 @@ Three parts: decision table, ASCII flowchart, canonical pipelines.
 
 ---
 
+## Core vs Advanced
+
+The fourteen skills split into two tiers:
+
+**Core 5 — everyday entry points** (reach for these first): `ds-conduct`, `ds-star-plus`, `ds-spike`, `data-profile`, `eda-narrative`. These cover the full daily workflow — orchestrate, solve, ensemble, profile, and explore. Most users never need anything else.
+
+**Advanced 9 — power users and specific needs**: `ds-star`, `ds-clarify`, `ds-model`, `ds-memory`, `ds-env-setup`, and the four Track-L standalone primitives (`ds-verify`, `ds-reconcile`, `ds-vote`, `ds-search`). The Track-L primitives are extracted internals of `ds-star-plus`/`ds-spike`, surfaced for users who need fine-grained control over verification, reconciliation, voting, or tree search independently of the main solver loop.
+
+When in doubt, start with `/ds-conduct` — it orchestrates the right Core skills for you automatically.
+
+---
+
 ## Start here
 
 Two ways in:
