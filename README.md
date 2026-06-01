@@ -12,6 +12,8 @@
 > writing and executing Python through an iterative loop that **never trusts code just because it
 > ran**, plus clarification, ensembling, profiling, and exploration skills around it.
 
+**→ [Quickstart — one dataset, one command, expected output](docs/quickstart.md)**
+
 ---
 
 ## Why DS-STAR?
