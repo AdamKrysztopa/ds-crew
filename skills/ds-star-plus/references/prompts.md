@@ -2,8 +2,7 @@
 
 Same roles as v1, with three upgrades: the **verifier** returns structured output, the
 **planner** receives an anti-repeat list when regenerating a truncated step, and each prompt
-notes its routed tier. Tiers: Haiku=`claude-haiku-4-5`, Sonnet=`claude-sonnet-4-6`,
-Opus=`claude-opus-4-8` (see `model_routing.md`).
+notes its routed tier. Tiers: Haiku/Sonnet/Opus (see `model_routing.md` and `config/models.json` for current IDs).
 
 ## Analyzer — Haiku
 

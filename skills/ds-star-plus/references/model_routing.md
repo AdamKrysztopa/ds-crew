@@ -1,3 +1,7 @@
+> **Single source of truth:** Concrete model IDs and prices are defined in
+> `config/models.json` (review item #6). The tier table below mirrors it;
+> if they diverge, config wins — update config, not this table.
+
 ## Reusable helper
 
 Any skill or caller can import `pick_model` from `scripts/route_model.py` to apply consistent

@@ -17,7 +17,7 @@ N = 5 adds model-tier and a second seed.
 
 ## Axis 2 — Model tier
 
-Mix `claude-opus-4-8` and `claude-sonnet-4-6` solvers (see `../ds-star-plus/references/model_routing.md`).
+Mix Opus and Sonnet tier solvers (see `../ds-star-plus/references/model_routing.md` and `config/models.json` for current IDs).
 Different tiers fail differently; a tier disagreement is itself informative. Keep at least one Opus
 solver so the panel has a strong member.
 
