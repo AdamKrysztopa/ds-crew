@@ -124,6 +124,19 @@ python3 skills/ds-spike/scripts/runlog.py runlog.json
 If it reports errors, the loop was not followed; do not present the answer as verified.
 This makes deviations *detectable after the fact*, not *impossible*.
 
+### Verifier-as-reward circularity (important)
+
+Both ds-spike and ds-search *score* candidate answers with the same A1-rubric verifier
+(`../ds-star-plus/scripts/verify_schema.py` + `references/rubric.md`) they use *inside*
+each solver. A biased judge is therefore amplified, not caught — the meta-aggregator
+inherits the same blind spot as the solvers it is judging.
+
+**Rule:** the meta-aggregator MUST run on a **different model instance** (and preferably
+a different tier) than the in-solver verifier. Concretely: if solvers verify with Opus,
+the cross-run aggregator must be a separate Opus instance with an independent prompt, or
+a different model tier — never reuse the same verifier call or context. This is a
+mitigation, not a proof of independence.
+
 ## Quick reference
 
 Diversity axes for the solvers: `references/personas.md`.

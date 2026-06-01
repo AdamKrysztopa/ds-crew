@@ -27,6 +27,19 @@ not by default. The value-model pre-screen keeps it affordable — most candidat
 pruned on a cheap estimate before execution — but even so, this is the most expensive mode
 in the suite. Apply it to the hard tail only.
 
+### Verifier-as-reward circularity (important)
+
+Both ds-spike and ds-search *score* candidate answers with the same A1-rubric verifier
+(`../ds-star-plus/scripts/verify_schema.py` + `references/rubric.md`) they use *inside*
+each solver. A biased judge is therefore amplified, not caught — the meta-aggregator
+inherits the same blind spot as the solvers it is judging.
+
+**Rule:** the meta-aggregator MUST run on a **different model instance** (and preferably
+a different tier) than the in-solver verifier. Concretely: if solvers verify with Opus,
+the cross-run aggregator must be a separate Opus instance with an independent prompt, or
+a different model tier — never reuse the same verifier call or context. This is a
+mitigation, not a proof of independence.
+
 ## How to run it
 
 **Cost guardrail:** MCTS search multiplies solver calls — apply the ensemble cost guardrail before starting. See `../ds-spike/references/cost_guardrails.md`.
