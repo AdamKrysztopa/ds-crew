@@ -12,6 +12,13 @@ standing principles, *not* "build everything":
   opt-in and reserved for a hard tail with a measured payoff.
 - **Streamline beats add.** No new top-level skill unless a benchmark or a real user pull demands
   it. Prefer deepening an existing skill.
+- **Integrated, not just standalone.** Every pattern below must serve the orchestration fabric —
+  `ds-conduct`, `ds-clarify`, `ds-spike`, `ds-star-plus` — wherever it makes sense, not only as a
+  leaf capability. A retrieval improvement only the solver can reach, or a memory rule only
+  `ds-star-plus` sees, is **half-built**. Each mechanism ships as a reusable script/reference that
+  the meta-skills *call*, mirroring the Track-L "primitive used everywhere" design (`ds-verify` /
+  `ds-reconcile` are internals of the solvers *and* standalone). The integration matrix below is
+  part of the definition of done — a phase is not complete until its consumers are wired.
 
 ## Verdict at a glance
 
@@ -48,20 +55,30 @@ relevance pass — *not* a learned re-ranker:
    score into the final top-K. Keep any file that scores high on *either* signal (recall-biased,
    because a missed file is unrecoverable downstream).
 
-**Files.**
+**Files (mechanism).**
+- `skills/ds-star-plus/scripts/column_match.py` — pure-stdlib term/column overlap scorer, callable
+  with just a question + schema digests (no solver state), so other skills can use it directly +
+  `test_column_match.py`.
 - `skills/ds-star-plus/references/retrieval.md` — add the column-level re-rank stage to the
   protocol.
-- `skills/ds-star-plus/scripts/` — `column_match.py` (pure-stdlib term/column overlap scorer) +
-  `test_column_match.py`.
 - `skills/ds-star-plus/references/evidence.md §5` — update to describe the two-pass→three-signal
   design and the oracle-gap target it attacks.
+
+**Files (integration — see matrix).**
+- `skills/ds-conduct/SKILL.md` — peek stage calls `../ds-star-plus/scripts/column_match.py` to pick
+  relevant files / route in multi-file cases (the `../` cross-ref pattern `ds-search` already uses).
+- `skills/ds-clarify/references/clarify_checklist.md` — add "which files are in scope?" prompted by
+  column-match candidates when files are ambiguous.
+- `skills/ds-spike/SKILL.md` — select the retrieved file-set **once** before dispatch; all N solvers
+  inherit the same scoped set (shared-spec rule).
 
 **Effort:** small–medium. **Cost:** one extra Haiku call per retrieval (only fires when N>100
 files). **Test:** unit-test the overlap scorer on synthetic schema digests; add a DABench/Krama-
 style eval case where the embedding pass alone misses a column-obvious file.
 
-**Done when:** `column_match.py` + tests pass in CI, retrieval.md documents the three-signal
-merge, and an eval case demonstrates a file recovered that embedding-only would miss.
+**Done when:** `column_match.py` + tests pass in CI, retrieval.md documents the three-signal merge,
+an eval case demonstrates a file recovered that embedding-only would miss, **and** the three
+consumers above call the shared scorer (CI path-check confirms the `../` references resolve).
 
 ---
 
@@ -82,12 +99,22 @@ Two small, composable additions to the **existing** `ds-memory`, no new skill.
   pass them to the planner as guidance.
 - Rules are advisory only — the verifier still gates everything (same cardinal rule as recipes).
 
-**Files.** `skills/ds-memory/SKILL.md` (add Mode 4 — Distill), `scripts/memory_store.py`
+**Files (mechanism).** `skills/ds-memory/SKILL.md` (add Mode 4 — Distill), `scripts/memory_store.py`
 (`distill_rules()` + `retrieve_rules()`), `scripts/test_memory_store.py`,
 `references/store_format.md` (rules schema), `references/evidence.md` (flip the ExpeL "partial"
 note to "implemented").
 
-**Effort:** small. **Cost:** the distill pass is a manual/periodic Claude call, not per-run.
+**Files (integration — see matrix).**
+- `skills/ds-clarify/references/clarify_checklist.md` — retrieved rules become checklist items
+  ("last time a revenue question was ambiguous on cancellations — ask it now").
+- `skills/ds-conduct/SKILL.md` — "assemble plan" stage calls `retrieve_rules()` and folds matches
+  into the workflow plan + the questions it raises.
+- `skills/ds-spike/references/personas.md` — rules seed each persona's assumption list (extends the
+  existing minority-report seeding).
+- `skills/ds-star-plus/SKILL.md` — planner retrieves rules alongside recipes at PLAN time.
+
+**Effort:** small. **Cost:** the distill pass is a manual/periodic Claude call, not per-run; rule
+retrieval is a cheap local store read shared by all consumers.
 
 ### 2b. ds-search dual-experience store (BUILD-small)
 
@@ -99,14 +126,25 @@ scored well / failed and why) into the **existing** `ds-memory` store, tagged as
 experience, so a later hard-task run seeds its tree from prior dead-ends and wins. No new store,
 no new infra — reuse `memory_store.py`.
 
-**Files.** `skills/ds-search/SKILL.md` (record/seed hooks), `skills/ds-search/references/
+**Files (mechanism).** `skills/ds-search/SKILL.md` (record/seed hooks), `skills/ds-search/references/
 evidence.md` (flip the dual-experience "partial" note), `skills/ds-memory/references/
 store_format.md` (search-experience entry type).
+
+**Files (integration — see matrix).**
+- `skills/ds-conduct/SKILL.md` — when escalating a hard task to `ds-search`, pass prior
+  search experience as seed.
+- `skills/ds-spike/references/aggregation.md` — cross-pollinate search-experience with spike
+  minority reports (both encode "what diverged and why").
+- `skills/ds-star-plus/references/search_mode.md` — on escalation, seed the tree from the
+  experience store.
 
 **Effort:** small. **Cost:** negligible (writes only, gated on a search run).
 
 **Phase 2 done when:** distill + rule-retrieval + search-experience round-trip are unit-tested,
-CI green, and the two `evidence.md` "partial/deferred" notes are updated to match reality.
+CI green, the two `evidence.md` "partial/deferred" notes match reality, **and** every consumer in
+the integration matrix is wired (clarify checklist, conduct plan-assembly, spike personas/
+aggregation, star-plus planner/search-mode) with CI path-checks confirming the cross-references
+resolve.
 
 ---
 
@@ -133,6 +171,26 @@ demonstrably wastes budget. At that point, the cheapest Claude-native step is a 
   cited influence in `ds-search/references/evidence.md`; do not build a separate mechanism.
 
 ---
+
+## Cross-skill integration matrix (part of "done")
+
+Each BUILD mechanism is a shared utility. This is where it must plug in — ✅ wire it, — = not
+applicable:
+
+| consumer | Column retrieval (P1) | Rule distillation (P2a) | Search-experience (P2b) |
+|---|---|---|---|
+| **`ds-conduct`** (orchestrator) | ✅ peek stage uses column-match to pick relevant files in multi-file/data-lake cases and route accordingly | ✅ "assemble plan" stage retrieves matching rules → folds them into the workflow plan and the questions it raises | ✅ when it escalates a hard task to `ds-search`, passes prior search experience |
+| **`ds-clarify`** (spec) | ✅ when files are ambiguous, surfaces column-match candidates as "which files are in scope?" | ✅ distilled rules become *clarify checklist items* — "last time this was ambiguous, ask it now" | — |
+| **`ds-spike`** (ensemble) | ✅ select the retrieved file-set **once** before dispatch so all N solvers solve the *same* scoped problem (ties to the shared-spec rule) | ✅ rules seed each persona's assumption list (extends the existing minority-report seeding) | ✅ search-experience ↔ spike minority reports cross-pollinate (both encode "what diverged") |
+| **`ds-star-plus`** (solver) | ✅ native home (Phase 1) | ✅ planner retrieves rules alongside recipes | ✅ on escalation to search mode, seed the tree from experience |
+| **`data-profile`** | ✅ reuses/produces the schema digests column-match scores against | — | — |
+
+**Design rule that makes this work:** the mechanism lives in **one** place and is *called*, never
+copy-pasted. Concretely:
+- `column_match.py` is a standalone scorer (stdlib, no solver state) so `ds-conduct`, `ds-clarify`,
+  and `ds-spike` can all call it directly — not only through a full `ds-star-plus` run.
+- `memory_store.py` gains `distill_rules()` / `retrieve_rules()` and a search-experience entry
+  type, so every consumer reads the same store with the same gating rule.
 
 ## Suggested execution order
 
