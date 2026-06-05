@@ -3,6 +3,22 @@
 All notable changes to ds-crew are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); this project uses semver.
 
+## [1.6.0] — 2026-06-05 — Interpreter version checkpoint in ds-env-setup
+
+### Added
+- **Stage 2.5 — interpreter version checkpoint** in `ds-env-setup`. Previously the skill accepted
+  whatever bare `python3` resolved to — on macOS that's Apple's stock **3.9**, which misses modern DS
+  wheels *and* sits outside the forecastability gate's `>=3.11,<3.13` band. Now, when `uv` is the
+  manager (uv can fetch interpreters without touching the system Python), the skill **asks the user**
+  whether to provision a newer interpreter — recommending **3.12** (newest supported; full wheel
+  coverage), with **3.11** or "keep default" as alternatives — and pins the choice via
+  `uv python install <v>` + `uv venv --python <v>` / `uv init --python <v>`.
+- **Explicit target band (3.11–3.12)** stated in the cardinal rule, with the rationale: <3.11 risks
+  missing wheels; ≥3.13 silently disables `dependence-forecastability` (gate drops to fallback).
+- For non-uv managers (venv/conda/poetry/pipenv), the checkpoint surfaces a better installed
+  interpreter (or notes the limitation) instead of silently inheriting an off-target default — without
+  blocking.
+
 ## [1.5.1] — 2026-06-05 — Make the forecastability tool actually usable
 
 ### Fixed
