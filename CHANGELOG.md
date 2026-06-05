@@ -3,6 +3,23 @@
 All notable changes to ds-crew are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); this project uses semver.
 
+## [1.5.0] — 2026-06-05 — Feasibility & leakage gate (pre-modeling)
+
+### Added
+- **Feasibility & leakage gate** — a pre-modeling protocol that runs *before* any model:
+  estimate the achievable performance **ceiling** and **scan for leakage**, then treat the ceiling
+  as the acceptance bar (a model that beats it is a leakage alarm, not a win). New shared reference
+  `ds-model/references/feasibility_gate.md`, with two faces:
+  - **Tabular (i.i.d.):** probe-model ceiling · single-feature leakage scan · adversarial validation
+    (train/test drift) · duplication / ID check.
+  - **Time-series / ordered:** **forecastability ceiling** (recommended tool: `dependence-forecastability`;
+    fallback ACF/PACF + entropy) · temporal split, never shuffle · target-leakage check.
+  Tool-agnostic (prose protocol, runs in the user's own language) — fills the suite's previously
+  implicit time-series path.
+- Wired into the affected skills: `ds-model` (new **Stage 0**, cardinal rule, quick reference),
+  `ds-conduct` (trigger catalog routes predictive/time-series patterns through the gate; plan
+  assembly notes it), `ds-clarify` (the spec's **Acceptance** now records the feasibility ceiling).
+
 ## [1.4.0] — 2026-06-05 — Three literature patterns (prose protocols)
 
 ### Added

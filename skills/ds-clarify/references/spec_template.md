@@ -31,6 +31,10 @@ order matching sample_result.csv / file saved to data/result.csv / chart titled 
 ## Acceptance
 - Sanity range / known reference: <e.g. expect 30–50%>
 - The answer is correct iff: <the concrete success condition>
+- **Feasibility ceiling** (predictive / forecast tasks only): <expected achievable metric from the
+  pre-modeling gate — `../ds-model/references/feasibility_gate.md`; for time-series, the
+  forecastability ceiling>. A model that beats this ceiling is a **leakage alarm**, not a win —
+  re-run the leakage scan before accepting it.
 
 ## Stated assumptions (agent judgement)
 - <anything not explicitly decided by the user, recorded so it is never silent>
