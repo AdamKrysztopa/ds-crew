@@ -3,6 +3,31 @@
 All notable changes to ds-crew are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); this project uses semver.
 
+## [1.4.0] — 2026-06-05 — Three literature patterns (prose protocols)
+
+### Added
+- **Column-level retrieval (Phase 1)** — `ds-star-plus/references/retrieval.md` Stage 3 is now an
+  operational protocol with an explicit recall-biased keep rule (keep a file strong on *either*
+  embedding *or* structure: column-name overlap, value containment, join-key reachability). Folds
+  into the existing Haiku relevance pass — no new call. Wired into `ds-conduct`, `ds-clarify`,
+  `ds-spike`, `data-profile`; worked recovery example added.
+- **ExpeL rule distillation (Phase 2a)** — `ds-memory` **Mode 4 (Distill)**: concrete recipes →
+  abstract `rules.jsonl` (our label for ExpeL's "natural-language insights"), retrieved as advisory
+  guidance. Wired into `ds-star-plus` planner, `ds-conduct` plan-assembly, `ds-spike` personas,
+  `ds-clarify` checklist.
+- **Search-experience store (Phase 2b)** — `search_experience.jsonl` (Empirical-MCTS long-term, dual
+  experience) with prose record/seed hooks in `ds-search`. Wired into `ds-star-plus` `search_mode`,
+  `ds-spike` `aggregation`, `ds-conduct` escalation.
+
+All three ship as **language-agnostic prose + JSONL schemas — zero new code** (judgment is prose;
+internal state is a neutral format that imposes no language on the user's analysis).
+
+### Fixed
+- Citation corrections (verified against `papers/`): the 44.69/52.55/8-pt oracle gap is **DS-STAR
+  Table 2**, not "KramaBench Table 2"; Empirical-MCTS dual experience is **short/long-term**, not
+  "success/failure"; ExpeL's term is "insights". Completed the papers corpus (ExpeL, Voyager, AWM)
+  and flipped the corresponding `evidence.md` notes to implemented.
+
 ## [1.3.1] — 2026-06-01 — Format token fix + benchmark study
 
 ### Fixed
