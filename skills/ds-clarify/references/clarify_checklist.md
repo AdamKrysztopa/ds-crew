@@ -5,6 +5,21 @@ question, **ambiguous** (ask the user), or **not applicable**? Only ask about th
 and batch related questions into one message. Each item lists the failure it prevents (mapped to
 the `ds-star-plus` rubric in `../ds-star-plus/references/rubric.md`).
 
+**Seed from distilled rules.** Before walking the list, if a rules store exists
+(`../ds-memory/SKILL.md` Mode 4 — ExpeL distillation; `rules.jsonl`), pull the rules whose
+task-signature family overlaps this question and turn each into a targeted checklist item — *"last
+time a revenue question on transaction logs was ambiguous on cancellations, that mattered; confirm
+it now."* A rule is a learned ambiguity; asking it up front is exactly what this checklist is for.
+
+## 0. Source files in scope (multi-file / data-lake only) — *prevents wrong_column_or_value*
+When there are many files and it is not obvious which ones answer the question, do not guess. Run the
+column-level retrieval protocol (`../ds-star-plus/references/retrieval.md` Stage 3: column-name
+overlap, value containment, join-key reachability) over the schema digests and surface the resulting
+candidates as an explicit scope question — including any file kept only by the recall-biased rule, so
+the user can confirm or prune before analysis commits to a file-set.
+> Prompt: *"To answer this I'd use `claims.csv` (has `claim_amount`, `policy_id`) and `policies.csv`
+> (joins on `policy_id`); `weather.csv` looks unrelated. Right set, or am I missing a file?"*
+
 ## 1. Metric definition — *prevents question_substitution*
 What exactly is being measured? "Revenue" = gross or net of discount/refunds/tax? "Active user" =
 logged in, transacted, or opened the app? "Average" = mean or median? Ask for the formula if the

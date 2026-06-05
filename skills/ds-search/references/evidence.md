@@ -33,25 +33,34 @@ orchestration stages.
 ## 4. Dual-experience memory to steer search
 
 **Empirical-MCTS** — Lu et al. (2026), arXiv:[2602.04248](https://arxiv.org/abs/2602.04248).
-Keeps *both* success and failure memory to steer expansion away from known dead-ends. `ds-search`
-uses the failure half through the anti-repeat list shared with `ds-star-plus` (`SKILL.md §3`).
+"Unifies two distinct types of experience via a dual-loop mechanism" — **short-term (intra-search)**
+and **long-term (cross-task)** experience accumulation (verified against
+`papers/empirical-mcts-2602.04248.pdf`; the paper frames it as short/long-term, *not* literally
+"success/failure"). `ds-search` now implements **both** halves: the in-run **anti-repeat list** is
+the short-term side (`SKILL.md §3`), and a persistent **search-experience store**
+(`search_experience.jsonl`, schema in `../ds-memory/references/store_format.md`) is the long-term
+side — recorded at end-of-search, read to seed the tree of a later hard-task run toward prior wins
+and away from dead-ends.
 
 ## Implementation depth — read this honestly
 
 `ds-search` is **prompt-level guidance, not engineered search infrastructure.** It directs Claude
 to run the I-MCTS/SWE-Search pattern within a single skill invocation; it does **not** ship a
-trained value-model, a persistent dual-experience store, or a UCT scheduler as code. Specifically:
+trained value-model or a UCT scheduler as code. The dual-experience memory, however, *is* now
+realized — as a language-neutral JSONL store plus prose record/seed protocols, not bundled code.
+Specifically:
 
 | paper mechanism | in ds-search | gap |
 |---|---|---|
 | introspective expansion (I-MCTS) | ✅ prompt instruction | — |
-| hybrid reward: value estimate → real verifier (I-MCTS) | 🟡 described | no trained value-model; the "estimate" is an LLM judgement |
-| dual success+failure memory (Empirical-MCTS) | 🟡 partial | failure side = anti-repeat list; no persistent success-experience store |
-| unified gen/explore/eval loop (Agent Alpha) | 🟡 referenced | architecture, not a distinct engineered loop |
+| hybrid reward: value estimate → real verifier (I-MCTS) | 🟡 described | no trained value-model; the "estimate" is an LLM judgement (DEFER — see plan) |
+| dual short/long-term experience (Empirical-MCTS) | ✅ implemented | short-term = anti-repeat list; long-term = `search_experience.jsonl` store (prose + JSONL, no engine) |
+| unified gen/explore/eval loop (Agent Alpha) | 🟡 referenced | architecture, not a distinct engineered loop (SKIP — already covered) |
 
-This is deliberate and consistent with the suite's cost thesis (search multiplies LLM calls).
-Building the engineered versions is a ROADMAP item, gated on a real hard-tail workload that the
-prompt-level version cannot handle.
+The remaining 🟡 rows are deliberate and consistent with the suite's cost thesis (search multiplies
+LLM calls); the hybrid-reward value-model is a DEFER and the unified loop a SKIP in
+`docs/plan/missing-patterns.md`. The long-term experience store closes the one row that was a real
+gap, without shipping a search *engine*.
 
 ## The verifier-as-reward caveat
 

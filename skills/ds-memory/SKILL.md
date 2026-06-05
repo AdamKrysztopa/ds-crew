@@ -13,10 +13,12 @@ similar tasks can seed their planner with matching recipes instead of starting c
 The store is built on three lines of agent-memory work: **Agentic Workflow Memory** (AWM,
 arXiv:2409.07429) — save what worked, retrieve by similarity; **Voyager** (arXiv:2305.16291) —
 a versioned library of self-verified skills; and **ExpeL** (arXiv:2308.10144) — distilling
-experience into reusable guidance. The downstream verifier still gates every reuse. This skill
-is the persistent-memory substrate of the ds-crew suite. Grounding and the two
-deliberately-deferred halves (Voyager's automatic curriculum, ExpeL's rule distillation):
-`references/evidence.md`.
+experience into reusable guidance. ExpeL's distillation is implemented as **Mode 4 (Distill)**
+below: concrete recipes → abstract **rules** (our label for ExpeL's "natural-language insights",
+extracted from cross-task success *and* failure). The downstream verifier still gates every reuse.
+This skill is the persistent-memory substrate of the ds-crew suite. Grounding, and the one
+deliberately-skipped half (Voyager's automatic curriculum — open-ended self-improvement, no current
+user): `references/evidence.md`.
 
 ## When this applies
 
@@ -24,11 +26,14 @@ Use **ds-memory** directly when the user wants to:
 - **Inspect** the store — "what analyses have we run?", "show me past results", "have we solved this before?"
 - **Prune** the store — "remove stale entries", "clean up old analyses", "prune recipes older than 2024"
 - **Retrieve** a past recipe explicitly — "reuse the analysis we ran on the sales data last month"
+- **Distill** rules from the store — "extract reusable heuristics from past runs", "what general lessons have we learned?" (Mode 4)
 
 Use it **indirectly** (called by other skills) when:
 - `ds-star-plus` reaches a clean verdict and wants to bank the recipe
-- `ds-star-plus` starts a new plan and a store exists at the default path
-- `ds-spike` wants to seed each solver's assumption list with minority-report assumptions from prior runs
+- `ds-star-plus` starts a new plan and a store exists at the default path — retrieves matching *recipes and rules*
+- `ds-conduct` assembles a plan and folds matching rules into the workflow + the questions it raises
+- `ds-clarify` turns a matching rule into a checklist item ("last time this task-kind was ambiguous here — ask now")
+- `ds-spike` wants to seed each solver's assumption list with minority-report assumptions and matching rules from prior runs
 
 Do **not** use this skill to run new analysis — that is `ds-star-plus` or `ds-spike`.
 
@@ -74,6 +79,33 @@ hits = retrieve(store, sig, data_fingerprint, k=3)
 Pass `hits` to the planner as *suggestions*. Mark them explicitly as prior recipes, not
 ground truth. The verifier still runs on every step.
 
+### Mode 4 — Distill (ExpeL rules; prose protocol, run periodically)
+
+Concrete recipes answer "what worked on *this* data"; **rules** answer "what tends to be true for
+*this kind of task*" — the ExpeL move of turning a pile of trajectories into reusable
+natural-language insights. This mode is **judgment, so it is prose, not an algorithm** — Claude does
+the clustering and extraction; the only artifact is a second JSONL file, `rules.jsonl`, in the same
+store. No new code: read with the existing generic `_load`, append with the existing generic
+`record` (or any JSONL reader/writer in your language — the format is the contract).
+
+**Distill (periodic, not per-run):**
+1. Read the recipe store. Group entries by `task_signature` similarity (the same word-overlap notion
+   `retrieve` uses) — and, where present, by `data_fingerprint` family.
+2. For each cluster with enough evidence (≥3 recipes, and ideally a mix of clean and corrected
+   outcomes), ask: *what reusable heuristic explains the wins and would have prevented the misses?*
+   Extract a **small** set of abstract rules — e.g. *"for revenue questions on transaction logs,
+   confirm cancellation/refund handling before summing"*. Keep them general (task-kind level), not
+   data-specific (that is what recipes are for). Prefer few, high-signal rules over many.
+3. Append each as one line to `rules.jsonl` (schema in `references/store_format.md`): the rule text,
+   the `task_signature` family it applies to, supporting recipe count, and a confidence note.
+4. Rules are **advisory only** — same cardinal rule as recipes; the verifier still gates everything.
+   A rule never asserts an answer, only a thing-to-check.
+
+**Retrieve rules (at plan time, alongside recipe retrieval — also prose):** read `rules.jsonl`, keep
+rules whose `task_signature` family overlaps the current question, and pass them to the planner as
+guidance ("prior runs of this task-kind suggest: …"). No scoring function — overlap judgment is
+Claude's, in the user's own environment.
+
 ## Output
 
 **Inspect / Prune:** a summary of store state — total entries, entries by score, entries by
@@ -82,6 +114,10 @@ count retained.
 
 **Retrieve:** a list of matching recipe entries (up to k=3), each showing task signature,
 data fingerprint, plan summary, outcome, score, and assumptions.
+
+**Distill:** the small set of rules written to `rules.jsonl` — each with its rule text, the
+task-signature family it covers, supporting recipe count, and confidence. Report how many clusters
+were examined and how many rules were added vs. already present.
 
 ## Quick reference
 

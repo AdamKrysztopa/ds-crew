@@ -53,7 +53,11 @@ best-scoring plan found and say so.
 Search mode replaces only Stage 4 (route/refine). Stages 1–2 (analyze, init), 3 (verify), 5
 (finalize), 6 (debug) are unchanged. The verifier is still the reward signal — which is why **A1
 (the rubric verifier) is a prerequisite**: an unreliable judge makes an unreliable search reward.
-Dual success/failure memory (Empirical-MCTS) feeds the anti-repeat list across branches.
+Dual experience (Empirical-MCTS) feeds search at both timescales: the **short-term** anti-repeat
+list across branches *within* this run, and — on escalation — the **long-term**
+`search_experience.jsonl` store, read at the start to seed the tree toward prior wins and away from
+recorded dead-ends (`../ds-search/SKILL.md` Step 0; schema in
+`../ds-memory/references/store_format.md`). Both are advisory; the verifier still scores every node.
 
 ## Budget note
 

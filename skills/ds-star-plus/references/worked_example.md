@@ -30,3 +30,42 @@ Lessons this trace demonstrates:
   reported.
 - **Stage 1 paid off.** Knowing `acquirer` was a list (from the description) is what let the
   coder defensively unwrap it instead of crashing mid-loop.
+
+---
+
+# Worked example: column-level retrieval recovers a file embedding missed
+
+A data-lake task (N ≈ 1,400 files) to show the Stage-3 keep rule (`retrieval.md`) doing its job.
+Question:
+
+> "What was the average **claim amount** per **policy** in 2023?"
+
+Two files matter; one is recovered only by structure:
+
+| File | Stage 1 embedding (query↔description cosine) | Stage 3 structural judgment | Kept? |
+|------|----------------------------------------------|------------------------------|-------|
+| `motor_claims_2023.csv` | **0.71** — description says "claims dataset" | column-name match: `claim_amount`, `policy_id` | ✅ both signals |
+| `pol_master.parquet` | **0.18** — description reads "master reference extract, internal", never says "policy" | join-key reachability: shares `policy_id` with the selected claims file; needed to scope "per policy" / 2023 effective policies | ✅ **structure only** |
+| `weather_stations.csv` | 0.22 | no column/value/key overlap | ❌ neither |
+
+**What would have happened embedding-only (Stage 1–2):** `pol_master.parquet` ranks **below**
+`weather_stations.csv` on cosine — its description is bureaucratic boilerplate that never mentions
+"policy". A top-K cut drops it. The run then computes "average claim amount" with no way to resolve
+each claim to its policy's 2023 validity → a confident, **wrong** number, and nothing downstream can
+recover the never-loaded file. This is precisely the 44.69→52.55 oracle gap (DS-STAR Table 2) in
+miniature.
+
+**What the keep rule does:** `pol_master.parquet` is weak on embedding but strong on **join-key
+reachability** (it shares `policy_id` with the already-selected claims file). The recall-biased rule
+— *keep a file strong on either signal* — carries it forward. The join becomes possible; the answer
+is computable.
+
+Lessons:
+
+- **Structure beats prose for discovery.** A file's *columns and keys* say what it can answer; its
+  *description* often does not. Stage 3 scores the former.
+- **Recall-bias is the whole point.** When embedding and structure disagree, keep the file — a
+  missed file is unrecoverable, an extra file is merely pruned by execution. Asymmetric cost,
+  asymmetric rule.
+- **No new tooling.** All three judgments (column-name, value, join-key) are read off the digests
+  the profiling step already produced, inside the Stage-2 Haiku pass — no extra call, no script.

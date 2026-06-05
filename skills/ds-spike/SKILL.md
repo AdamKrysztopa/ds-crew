@@ -39,6 +39,13 @@ Run `../ds-clarify` first and write `data/analysis-spec.md`. Without a shared sp
 diverge on *intent* rather than *method*, and the ensemble is noise instead of signal. Every
 solver gets the identical spec.
 
+**Lock the file-set here too (multi-file / data-lake).** If retrieval is in play, select the relevant
+file-set **once** at this stage using the column-level protocol
+(`../ds-star-plus/references/retrieval.md` Stage 3) and record it *in the shared spec* — do not let
+each solver re-retrieve. Letting N solvers each pick their own files reintroduces the very
+divergence the shared spec exists to remove (they'd be solving subtly different problems); a single
+locked, recall-biased file-set keeps the ensemble measuring *method* variance, not *input* variance.
+
 ### Stage 2 — Dispatch N diverse solvers
 
 **Cost guardrail (default on):** Before launching N agents, estimate N× cost. If the estimate exceeds $1.00 or ~200k tokens, confirm with the user first. After the run, report actual `cost_usd` from each solver manifest. See `references/cost_guardrails.md` for the full pattern.

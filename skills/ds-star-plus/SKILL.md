@@ -140,7 +140,7 @@ poorly but are clearly on-topic by name/columns. See `references/evidence.md` §
    If the input is a PDF or image, handle via native vision per `references/multimodal.md` — no extra library needed.
 2. **Initialize** with one simple executable step (Haiku planner → Sonnet coder) and run it.
    For multi-file joins or multiple independent outputs, represent the plan as a DAG (see `references/planning_graph.md`); linear chain is the default for simple tasks.
-   **Memory (opt-in):** If `./.ds-crew-memory/recipes.jsonl` exists, call `retrieve(store, task_signature(question), data_fingerprint)` to seed the planner with matching recipes as *suggestions* (never blindly trusted — the verifier still gates every step).
+   **Memory (opt-in):** If `./.ds-crew-memory/recipes.jsonl` exists, call `retrieve(store, task_signature(question), data_fingerprint)` to seed the planner with matching recipes as *suggestions* (never blindly trusted — the verifier still gates every step). If `./.ds-crew-memory/rules.jsonl` exists, also retrieve matching **rules** (ExpeL distillation; `../ds-memory/SKILL.md` Mode 4) whose task-signature family overlaps the question, and pass them to the planner as advisory "things to check" — not answers.
 3. **Verify** (Opus): get `{score, rubric, checks, reason, missing}` (validate with
    `scripts/verify_schema.py`). Borderline/high-stakes → 3x vote. `score == 4` and no rubric
    `fail` → Stage 5.

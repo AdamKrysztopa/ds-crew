@@ -34,6 +34,55 @@ hits = retrieve(store, sig, fingerprint)
 - `retrieve()` returns up to `k=3` entries by default.
 - A score of `(0, 0)` — no fingerprint match and zero signature word-overlap — is excluded entirely.
 
+## Rules store (`rules.jsonl`) — Mode 4 (ExpeL distillation)
+
+A **second** JSONL file alongside `recipes.jsonl`, in the same `.ds-crew-memory/` directory:
+`./.ds-crew-memory/rules.jsonl`. Where a recipe is a concrete solved instance, a **rule** is an
+abstract, task-kind-level heuristic distilled from a *cluster* of recipes (ExpeL's "natural-language
+insight"). This file is the **contract**; it is plain JSON, readable/writable in any language —
+Mode 4 produces it by Claude's judgment, not by a scoring function.
+
+Each line is one rule object:
+
+| Field | Type | Notes |
+|---|---|---|
+| `rule` | string | The heuristic, in natural language. A thing to *check*, never an answer. E.g. `"for revenue questions on transaction logs, confirm cancellation/refund handling before summing"`. |
+| `task_signature_family` | string | Pipe-joined representative words of the task-kind this rule covers (same word-overlap notion as recipe `task_signature`). Used to match a rule to an incoming question. |
+| `support` | int | How many recipes in the cluster the rule was distilled from (evidence weight). |
+| `derived_from` | list[str] | Optional. `data_fingerprint`s or signatures of the supporting recipes, for traceability back to evidence. |
+| `confidence` | string | `"high"` / `"medium"` / `"low"` — Claude's calibration on how reliably the rule generalizes. |
+| `timestamp` | string (ISO 8601) | Optional. When the rule was distilled (lets a later re-distill supersede it). |
+
+**Retrieval (advisory):** at plan time, read `rules.jsonl`, keep rules whose `task_signature_family`
+overlaps the current question, and pass them to the planner/checklist as guidance — never as
+ground truth. The verifier still gates every step, exactly as for recipes.
+
+## Search-experience store (`search_experience.jsonl`) — ds-search dual memory
+
+A **third** JSONL file in the same `.ds-crew-memory/` directory:
+`./.ds-crew-memory/search_experience.jsonl`. This is the **long-term (cross-run)** half of
+Empirical-MCTS's dual experience (the in-run anti-repeat list is the short-term half). `ds-search`
+appends one entry per materially distinct explored branch at end-of-search; a later hard-task run
+reads matching entries to seed its tree toward prior wins and away from dead-ends. Plain JSON,
+language-neutral — `ds-search` writes it in whatever language the run used.
+
+Each line is one search-experience object:
+
+| Field | Type | Notes |
+|---|---|---|
+| `task_signature_family` | string | Task-kind key (same word-overlap notion as recipes/rules), for matching to a future task. |
+| `approach` | string | The branch's strategy in one phrase — e.g. `"join claims→policy on policy_id, then group by year"`. |
+| `verifier_score` | int (1–4) | The score the branch reached when executed (or its best partial). |
+| `outcome` | string | `"win"` or `"dead-end"`, with a one-line *why* — e.g. `"dead-end: double-counted refunds"`. |
+| `data_fingerprint` | string | Optional. Dataset fingerprint, for tighter matching. |
+| `timestamp` | string (ISO 8601) | Optional. When the branch was recorded. |
+
+**Seeding (advisory):** at the start of a hard `ds-search` run, read entries whose
+`task_signature_family` overlaps the task; bias expansion toward `win` approaches and away from
+`dead-end` ones *before* spending execution budget. Advisory only — the verifier still scores every
+executed node. This store also cross-pollinates with `ds-spike` minority reports (see
+`../ds-spike/references/aggregation.md`): both encode *what diverged and why*.
+
 ## Pruning guidance
 
 The store is **append-only** at write time. To prune:

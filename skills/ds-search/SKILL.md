@@ -44,6 +44,14 @@ mitigation, not a proof of independence.
 
 **Cost guardrail:** MCTS search multiplies solver calls — apply the ensemble cost guardrail before starting. See `../ds-spike/references/cost_guardrails.md`.
 
+0. **Seed from prior search experience (long-term memory; opt-in).** If a store exists at
+   `./.ds-crew-memory/search_experience.jsonl`, read the entries whose task-signature family
+   overlaps this task and use them to **prime the tree**: bias expansion *toward* approaches that
+   scored well on similar past tasks and *away* from recorded dead-ends — before spending any
+   execution budget. This is the **long-term (cross-run)** half of Empirical-MCTS's dual experience;
+   the in-run anti-repeat list is the short-term (intra-search) half. Entry schema:
+   `../ds-memory/references/store_format.md`. Seeded experience is advisory — the verifier still
+   scores every executed node.
 1. **Formulate the single hard task clearly** — one well-scoped question, with all relevant
    data files and the desired output format specified.
 2. **Activate search mode** per `../ds-star-plus/references/search_mode.md`. Set:
@@ -55,6 +63,12 @@ mitigation, not a proof of independence.
    verdict once executed.
 4. **Take the highest-scoring leaf** as the answer. If no leaf reached `score == 4` with
    no rubric failures, report the best found and state that it did not fully pass.
+5. **Record the experience (long-term memory; opt-in).** Append one
+   `search_experience.jsonl` line per *materially distinct* branch outcome — the approach tried, the
+   verifier score it reached, and a one-line "why it won / why it died" — so a later hard-task run
+   (Step 0) seeds from both the wins and the dead-ends. Write only at end-of-search, gated on a real
+   run; this is the persistent success+failure store the honesty table used to mark missing. Schema:
+   `../ds-memory/references/store_format.md`. (Plain JSONL — append in whatever language the run used.)
 
 Selection strategy: pick the highest-value non-terminal leaf to expand next (greedy-on-value;
 UCT-style explore/exploit balance is optional at this scale). Stop on first sufficient node

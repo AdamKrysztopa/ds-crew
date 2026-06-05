@@ -123,18 +123,25 @@ the full description, which is the escalation path built into the prompts.
 computing the cosine similarity between the embedding of the user's query and each description"*
 (§3.3); KramaBench uses top-100 via Gemini-Embedding-001 (§4.1).
 
-**Evidence the single-stage retriever leaves accuracy on the table.** KramaBench Table 2: with
-retrieval DS-STAR scores **44.69 total**; in the **oracle** setting (relevant files handed in) it
-scores **52.55** — a **~8-point gap** attributable purely to retrieval misses. The paper concedes
-it directly: *"while our current retrieval method is effective, advanced data discovery is a
-promising direction for unlocking the full potential of DS-STAR."* The scale is real — the
-Astronomy domain alone has **1,556 files** (Table 5).
+**Evidence the single-stage retriever leaves accuracy on the table.** **DS-STAR's own Table 2**
+(this paper, evaluated on KramaBench — *not* a KramaBench-paper table): with retrieval DS-STAR
+scores **44.69 total**; in the relevant-files **oracle** setting (relevant files handed in) it
+scores **52.55** — the paper states accuracy "increases by **8 percentage points**", a gap
+attributable purely to retrieval misses. It concedes the lever directly: *"while our current
+retrieval method is effective, advanced data discovery is a promising direction for unlocking the
+full potential of DS-STAR."* The scale is real — KramaBench's Astronomy domain alone has **1,556
+files**. (Note: KramaBench's *own* "oracle" setting is input-obfuscation, a different thing; the
+44.69/52.55 retrieval-oracle numbers are DS-STAR's.)
 
 **Why v2's response follows.** Pure embedding cosine misses files that are clearly on-topic by
-name/columns but embed poorly against the query phrasing. v2 keeps the cheap embedding stage to
-get from thousands of files down to a top-~150 candidate pool, then adds a **cheap Haiku relevance
-pass** that keeps only files plausibly needed for *this* query. It is a direct, low-cost attempt
-at the "advanced data discovery" the paper names as the lever for closing that 8-point oracle gap.
+name/columns but embed poorly against the query phrasing. v2 keeps the cheap embedding stage to get
+from thousands of files down to a top-~150 candidate pool (Stage 1), adds a **cheap Haiku relevance
+pass** (Stage 2), and — within that same pass — a **column-level / value-matching re-rank** (Stage 3:
+column-name overlap, low-cardinality value containment, join-key reachability) with a **recall-biased
+keep rule** (carry a file if it is strong on *either* the embedding or any structural signal). It is
+a direct, low-cost attempt at the "advanced data discovery" the paper names as the lever for closing
+that 8-point oracle gap. See `retrieval.md` for the operational protocol; it adds **no new tooling or
+call** — the structural judgments fold into the existing Haiku pass.
 
 ## 6. Early-exit guardrail
 

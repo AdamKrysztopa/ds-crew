@@ -34,3 +34,13 @@ identical. This is the cheapest diversity and the floor for any spike.
 
 Record each solver's `{persona, model, seed}` alongside its answer so the minority report can say
 *which kind* of approach diverged, not just that one did.
+
+## Seeding personas with distilled rules
+
+If a rules store exists (`../ds-memory/SKILL.md` Mode 4 — ExpeL distillation; `rules.jsonl`),
+retrieve the rules whose task-signature family overlaps this task and **seed every persona's
+assumption list with them** before dispatch. This extends the existing minority-report seeding:
+prior runs' hard-won heuristics ("confirm refund handling before summing revenue") become explicit
+assumptions each solver must take a position on — so when solvers diverge, they diverge *knowingly*
+on a flagged fork rather than re-discovering the same trap independently. Rules are advisory and
+shared identically across all N solvers (they are part of the locked spec, not a per-solver variable).

@@ -41,6 +41,14 @@ solvers' assumptions** — because the assumptions are usually *why* they diverg
 then narrates the deciding difference and, if `data/analysis-spec.md` does not settle it, escalates
 that fork to the user instead of silently adopting the majority.
 
+**Cross-pollinate with the search-experience store.** A spike minority report and a `ds-search`
+search-experience entry encode the same thing — *what diverged and why*. When a minority cluster
+turns out to be the deciding fork (a winning or losing approach), record it as a search-experience
+entry (`../ds-memory/references/store_format.md`: `approach` = the cluster's method, `outcome` =
+win/dead-end + the deciding assumption) so a later hard run can seed from it. Conversely, seed spike
+personas' assumption lists from matching prior search-experience entries (see
+`personas.md`). Both directions are advisory; the verifier and the spec still govern.
+
 ## Reading the result
 
 - **High confidence + unanimous** → report the number plainly.

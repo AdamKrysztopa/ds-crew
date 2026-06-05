@@ -1,10 +1,13 @@
 # Data-lake retrieval (A3) — two stages plus column-level matching
 
-For data lakes (N > ~100 files; KramaBench's Astronomy domain has 1,556) you cannot load every file
-description into context. DS-STAR retrieves top-K by query↔description embedding cosine. That leaves
-accuracy on the table — KramaBench Table 2: retrieval 44.69 vs oracle 52.55, a **~8-point gap** the
-paper flags as "advanced data discovery... a promising direction." This file is the v2 retrieval
-policy and the A3 upgrade that chases that gap.
+For data lakes (N > ~100 files; KramaBench's Astronomy domain has 1,556 files) you cannot load every
+file description into context. DS-STAR retrieves top-K by query↔description embedding cosine. That
+leaves accuracy on the table — **the DS-STAR paper's own Table 2** (2509.21825, evaluated on
+KramaBench): retrieval **44.69** vs relevant-files oracle **52.55**, an **8-percentage-point gap**
+the paper flags as "advanced data discovery... a promising direction." (KramaBench (2506.06541) is
+the benchmark and the source of the data-lake scale; its *own* "oracle" is a different,
+input-obfuscation setting — don't conflate.) This file is the v2 retrieval policy and the A3 upgrade
+that chases that gap.
 
 ## Stage 1 — Embedding recall (cheap, high-recall)
 
@@ -20,20 +23,33 @@ phrasing but are obviously on-topic by name/columns — the main failure mode of
 
 ## Stage 3 (A3) — Column-level / value matching re-rank
 
-The upgrade that targets the oracle gap: for the surviving candidates, score on **structure**, not
-just text:
-- **column-name match**: does the file expose a column the query needs (an entity id, the metric, a
-  join key)? Exact/fuzzy column-name overlap with the query's nouns.
-- **value overlap**: if the query names a literal (`NexPay`, a country, a merchant), does any
-  low-cardinality column actually *contain* that value? A file that holds the asked value beats one
-  that merely mentions it in prose.
-- **join reachability**: keep files that share a key with an already-selected file, even if they
-  don't match the query directly — they're needed to *complete* the join (the classic multi-file
-  miss).
+The upgrade that targets the oracle gap. **No new tooling — this folds into the Stage 2 Haiku
+pass.** That pass already has the query and each surviving file's schema digest in context; have it
+additionally emit, **per file**, the three structural judgments below. Everything scores against the
+schema digest the file-profiling step already produced (column names, dtypes, sheet names, and the
+low-cardinality value lists) — whatever language that step ran in. No extra I/O, no extra call.
 
-Re-rank by a blend of the embedding score and these structural signals; carry the final top-K
-forward. The structural signals are cheap (computed from digests/profiles) and directly attack why
-cosine alone under-retrieves.
+For each surviving candidate, judge:
+
+1. **column-name match** — does the file expose a column the query needs (an entity id, the metric,
+   a join key)? Exact or fuzzy overlap between the query's nouns and the column names (treat
+   `customer_id` ≈ "customer", `claim_amount` ≈ "claim"/"amount").
+2. **value overlap** — if the query names a literal (`NexPay`, a country, a merchant), does any
+   **low-cardinality** column actually *contain* that value? A file that holds the asked value beats
+   one that merely mentions it in prose.
+3. **join reachability** — keep files that share a key column with an **already-selected** file,
+   even if they don't match the query directly — they're needed to *complete* the join (the classic
+   multi-file miss).
+
+**The keep rule (recall-biased — this is the point).** Carry a file forward into the final top-K if
+it is strong on **either** the embedding/Haiku-relevance signal **or** any structural signal above.
+Do **not** require both. A missed file is unrecoverable downstream — the whole run silently fails on
+a file that was never loaded — so when the two signals disagree, keep the file. Bias toward recall
+and let execution prune what is genuinely irrelevant later.
+
+This directly attacks why cosine alone under-retrieves (it ranks by query↔description prose
+similarity and misses files that are obviously on-topic by column/value structure), which is the
+documented source of the oracle gap below.
 
 ## Budget & fallback
 
