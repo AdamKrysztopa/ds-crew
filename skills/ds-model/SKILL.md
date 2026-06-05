@@ -23,14 +23,25 @@ Do **not** use for pure data aggregation, analytical questions, or EDA — those
 > **The held-out metric is law.**
 > Never report training-set performance as the result.
 > Every transformer (scaler, encoder, imputer) must be fit on the training split only, then applied to val/test.
+> **Before modeling**, run the feasibility & leakage gate (`references/feasibility_gate.md`): estimate the
+> achievable ceiling and scan for leakage. A model that beats the ceiling is presumed leaking until proven otherwise.
 > Confirm the full leakage checklist (`references/leakage_cv.md`) before finalising any result.
 
 ## How to run it
 
+### Stage 0 — Feasibility & leakage gate (before any model)
+Run the gate in [`references/feasibility_gate.md`](references/feasibility_gate.md) **first** — estimate
+the **achievable ceiling** and **scan for leakage**, picking the face by data shape:
+- **Tabular (i.i.d.):** probe-model ceiling · single-feature leakage scan · adversarial validation (train/test drift) · duplication / ID check.
+- **Time-series / ordered:** forecastability ceiling (recommended tool: `dependence-forecastability`; fallback ACF/PACF + entropy) · **temporal split, never shuffle** · target-leakage check.
+
+Record the ceiling and the leakage flags — the ceiling becomes the acceptance bar carried into the
+spec. A later model that beats it is a **leakage alarm, not a win**.
+
 ### Stage 1 — Analyse data and define the objective
 - Profile the dataset (shape, dtypes, missing values, target distribution).
 - Agree on the **evaluation metric** (e.g. RMSE, AUC, log-loss) and **direction** (`min` or `max`).
-- Create a fixed train/val(/test) split with a locked random seed. This split is never changed during the run.
+- Create a fixed train/val(/test) split with a locked random seed — **temporal (time-ordered) or stratified, per the Stage-0 gate**. This split is never changed during the run.
 
 ### Stage 2 — Draft the baseline model
 - Write the simplest reasonable model (e.g. linear model, decision tree, or gradient-boosted tree with default parameters).
@@ -73,6 +84,7 @@ Every `ds-model` run produces:
 
 | Resource | What it covers |
 |---|---|
+| [`references/feasibility_gate.md`](references/feasibility_gate.md) | **Pre-modeling feasibility & leakage gate** — ceiling probe, single-feature leakage scan, adversarial validation, time-series forecastability |
 | [`references/solution_tree.md`](references/solution_tree.md) | AIDE loop, tree-of-drafts, stopping conditions, fair-comparison guarantee |
 | [`references/leakage_cv.md`](references/leakage_cv.md) | Six-item leakage checklist, common pitfalls, Pipeline pattern |
 | [`references/evidence.md`](references/evidence.md) | AIDE (2502.13138), AutoKaggle (2410.20424), AutoML-Agent (2410.02958) |

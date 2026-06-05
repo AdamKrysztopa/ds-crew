@@ -74,7 +74,7 @@ from Stage 2. Determine:
 
 - Which skills, in what order
 - `ds-spike` N + personas, if ensemble selected
-- Whether `ds-model` is needed (prediction task)
+- Whether `ds-model` is needed (prediction task) — if so, its **first** step is the feasibility & leakage gate (`../ds-model/references/feasibility_gate.md`): estimate the achievable ceiling (forecastability for time-series) and scan for leakage *before* modeling
 - The `analysis-spec.md` path that `ds-clarify` will write
 - Explicit checkpoint points and backtrack conditions at each handoff
 

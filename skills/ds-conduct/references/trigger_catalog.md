@@ -7,9 +7,9 @@ is this a time-series problem?"), not asked in the abstract.
 
 | Data pattern detected | Question to ask | Candidate skill / route |
 |---|---|---|
-| Timestamp / datetime column detected | "Is this a time-series or panel problem? What prediction horizon or aggregation window? Should we respect temporal order in splits?" | Time-aware ds-star-plus or ds-model |
+| Timestamp / datetime column detected | "Is this a time-series or panel problem? What prediction horizon or aggregation window? Should we respect temporal order in splits?" | Time-aware ds-star-plus or ds-model — if forecasting, run the **time-series face** of the feasibility gate first (forecastability ceiling + temporal split): `../ds-model/references/feasibility_gate.md` |
 | Two or more files share a candidate key column | "Is a join intended? What join type (inner / left / outer)? Which file is the left table?" | Multi-file ds-star-plus |
-| Target-shaped column (binary, bounded 0–1, or named label / target / y / churn) + user mentions prediction | "Is this a predictive task? What is the evaluation metric? What is the prediction horizon?" | ds-model |
+| Target-shaped column (binary, bounded 0–1, or named label / target / y / churn) + user mentions prediction | "Is this a predictive task? What is the evaluation metric? What is the prediction horizon?" | ds-model — its **first** step is the feasibility & leakage gate (ceiling + single-feature leakage scan): `../ds-model/references/feasibility_gate.md` |
 | Many files (>10) / data-lake structure | "Do you want to search all files or a specific subset? Is there a schema registry or a master index file?" | ds-star-plus with two-stage retrieval |
 | High-cardinality ID column (unique count ≈ row count) | "Is this an entity identifier? Should the analysis be per-entity or aggregated across all entities?" | Groupby-first ds-star-plus |
 | Heavy missingness (>20 % null in key columns) or dirty indicators (sentinel values, inconsistent types) | "Should we profile the data first? Are nulls meaningful (e.g. 'no event occurred') or are they data-quality issues that need cleaning?" | data-profile first, then ds-star-plus |
