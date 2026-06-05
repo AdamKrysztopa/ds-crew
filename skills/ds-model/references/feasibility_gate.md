@@ -31,10 +31,23 @@ libraries. The gate has **two faces**; pick by data shape.
 ## B. Time-series / ordered — when a datetime or row ordering exists
 
 1. **Forecastability gate (the ceiling).** Before forecasting, estimate **how predictable** the
-   series is and **at what dependence horizon**. Recommended tool: **`dependence-forecastability`**
-   (dependence-structure / forecastability analysis). **Fallback if unavailable:** ACF/PACF for the
-   dependence horizon + a predictability proxy (permutation or sample entropy) + a "same period last
-   cycle" naive baseline. Record the ceiling.
+   series is and **at what dependence horizon**.
+
+   **Recommended tool — `dependence-forecastability`** (horizon-wise forecastability triage via
+   AMI/pAMI dependence scorers; repo: <https://github.com/AdamKrysztopa/dependence-forecastability>):
+   - **Install:** `pip install dependence-forecastability` (or `uv add dependence-forecastability`).
+     Optional extras: `[causal]`, `[agent]`, `[calendar]`, `[transport]`.
+   - **⚠️ Distribution name ≠ import name.** Installed as `dependence-forecastability`, but you
+     **`import forecastability`** (not `dependence_forecastability`).
+   - **⚠️ Python 3.11–3.12 only** (`requires-python >=3.11,<3.13`). If the project env is 3.13+
+     (e.g. a 3.14 `.venv`), run the gate in a separate 3.11/3.12 venv, or use the fallback below.
+   - **Use:** `from forecastability import TriageRequest, run_triage` → `run_triage(TriageRequest(...))`
+     for the horizon-wise forecastability ceiling; or the `forecastability` CLI. See the package
+     README / `forecastability --help` for exact arguments.
+
+   **Fallback (if it can't be installed — e.g. Python 3.13+):** ACF/PACF for the dependence horizon
+   + a predictability proxy (permutation or sample entropy) + a "same period last cycle" naive
+   baseline. Record the ceiling either way.
 2. **Temporal split — always.** Split by **time** (train earlier, test later), **never shuffle**;
    use time-respecting CV (rolling / expanding window). A random split on ordered data *is* leakage.
 3. **Target-leakage check.** No future information in features (no look-ahead aggregates), no

@@ -1,6 +1,6 @@
 {
   "name": "ds-crew",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "A suite of recent data-science skills for Claude Code: ds-star & ds-star-plus (iterative plan→implement→execute→verify→route solving with a rubric-graded LLM-as-judge), ds-clarify (human-in-the-loop spec), ds-spike (multi-data-scientist ensemble with debate), ds-model (AIDE solution-tree + leaderboard), ds-conduct (data-aware orchestrator), ds-memory (cross-session memory), ds-verify/ds-reconcile/ds-vote/ds-search (standalone primitives), data-profile, and eda-narrative. Grounded in DS-STAR (Nam et al., 2025) and follow-on work.",
   "author": {
     "name": "Adam Krysztopa",
