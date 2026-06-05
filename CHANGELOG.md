@@ -3,6 +3,16 @@
 All notable changes to ds-crew are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); this project uses semver.
 
+## [1.5.1] — 2026-06-05 — Make the forecastability tool actually usable
+
+### Fixed
+- `ds-model/references/feasibility_gate.md`: the time-series gate now gives a **concrete, usable
+  recipe** for `dependence-forecastability` instead of just naming it — `pip install
+  dependence-forecastability`, the **distribution-name ≠ import-name** gotcha (`import forecastability`),
+  the **Python 3.11–3.12** constraint (with venv/fallback guidance for 3.13+ envs), the
+  `run_triage(TriageRequest(...))` entry point and the `forecastability` CLI, and the repo link.
+  Without this, an agent would recognize the tool but fumble the install/import.
+
 ## [1.5.0] — 2026-06-05 — Feasibility & leakage gate (pre-modeling)
 
 ### Added
