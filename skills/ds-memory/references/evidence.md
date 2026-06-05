@@ -27,13 +27,19 @@ and reused as building blocks. `ds-memory` adopts the library-of-verified-artifa
 ## 3. Experience distillation — turn trajectories into rules
 
 **ExpeL** — Zhao et al. (2023), arXiv:[2308.10144](https://arxiv.org/abs/2308.10144).
-ExpeL collects success/failure trajectories and distills task-level *rules* (abstract heuristics),
-not just concrete examples. `ds-memory` currently stores concrete recipes and the minority-report
-assumptions that seed `ds-spike`.
+ExpeL collects cross-task **success *and* failure** trajectories and distills natural-language
+**insights** (abstract heuristics), not just concrete examples; at inference it recalls those
+insights alongside its successful exemplars. (Verified against `papers/expel-2308.10144.pdf`: the
+paper's term is "insights", which we surface as "rules"; it derives them from both successes and
+failures.)
 
-> **Partial (deliberate):** the abstract cross-task *rule distillation* half of ExpeL — turning
-> many recipes into a small set of reusable heuristics — is not built. Recipes are concrete, not
-> distilled. Recorded as a ROADMAP item.
+> **Implemented — Mode 4 (Distill).** The cross-task *rule distillation* half of ExpeL is built:
+> `ds-memory` Mode 4 clusters recipes by task signature and distills a small set of abstract
+> **rules** (our label for ExpeL's "insights") into `rules.jsonl`, retrieved as advisory guidance
+> alongside concrete recipes. It is **prose, not an algorithm** — Claude does the clustering and
+> extraction; the JSONL schema (`references/store_format.md`) is the only artifact, so it imposes no
+> language on the user. Rules are advisory; the verifier still gates every step. (Distillation is a
+> *judgment* task — deliberately not a scoring function.)
 
 ## The honest caveat
 

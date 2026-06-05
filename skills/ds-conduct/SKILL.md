@@ -49,6 +49,13 @@ Shared key: merchant_id (both files)
 Triggered patterns: timestamp, shared key, target-shaped column (is_active), internal report language
 ```
 
+**Many files (data-lake / N > ~100).** When the peek surfaces too many files to load wholesale,
+do not route on filename or embedding guesswork. Apply the column-level retrieval protocol —
+`../ds-star-plus/references/retrieval.md` Stage 3 (column-name overlap, low-cardinality value
+containment, join-key reachability, with the recall-biased keep rule) — to pick the relevant
+file-set from the digests you already produced, then route on that scoped set. A file dropped here
+is unrecoverable downstream, so keep anything strong on *either* embedding *or* structure.
+
 ### Stage 2 — Grill (data-aware)
 
 Using the trigger catalog (`references/trigger_catalog.md`), identify every pattern that fired
@@ -70,6 +77,18 @@ from Stage 2. Determine:
 - Whether `ds-model` is needed (prediction task)
 - The `analysis-spec.md` path that `ds-clarify` will write
 - Explicit checkpoint points and backtrack conditions at each handoff
+
+**Fold in distilled rules (if a store exists).** Read the rules store (`../ds-memory/SKILL.md`
+Mode 4 — ExpeL distillation; `rules.jsonl`) and keep any rule whose task-signature family overlaps
+this task. Let matches shape the plan *and* the questions you raise — e.g. a rule "confirm
+cancellation handling before summing revenue" becomes both a plan step and a Stage-2 question.
+Rules are advisory; they never override the user or the verifier.
+
+**Escalation to search (hard single-number tasks).** When a task is a single high-stakes number
+that greedy solving keeps missing, route it to `../ds-search/SKILL.md` (tree-search). If a
+`search_experience.jsonl` store exists, pass the matching prior experience as the seed (its Step 0)
+so the tree starts from past wins and avoids recorded dead-ends — search multiplies cost, so seeding
+it well is what keeps the escalation affordable.
 
 Present the filled plan to the user in plain language. Do not begin execution until the user
 approves.

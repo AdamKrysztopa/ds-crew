@@ -59,3 +59,25 @@ These metadata items require manual action on GitHub:
 - Phase 3 ✅ — multimodal, export, viz, big-data guidance added
 - Phase 4 ⬜ — speculative backlog recorded in ROADMAP.md
 - Safety ✅ — PII detection, cost guardrails added
+
+## Missing-literature-patterns initiative (branch `plan/missing-patterns`)
+
+Plan: `docs/plan/missing-patterns.md`. Six literature patterns triaged → 3 BUILD, 1 DEFER, 2 SKIP.
+Design principle (P0): Claude skills are **prose protocols**; judgment is prose, internal state is a
+language-neutral JSONL format (Philosophy B — never put our language on the *user's* analysis path).
+
+- **Papers corpus completed** — fetched + content-verified ExpeL (2308.10144), Voyager
+  (2305.16291), AWM (2409.07429); all 13 cited PDFs now in `papers/`.
+- **Citation correction** — the 44.69/52.55/8-pt oracle gap is **DS-STAR Table 2**, not
+  "KramaBench Table 2" (fixed in `ds-star-plus/references/retrieval.md` + `evidence.md §5`).
+- **Phase 1 (column-level retrieval) ✅** — `retrieval.md` Stage 3 is now an operational protocol
+  with the recall-biased keep rule; wired into ds-conduct, ds-clarify, ds-spike, data-profile;
+  worked recovery example added. No new code (prose only).
+- **Phase 2a (ExpeL rule distillation) ✅** — `ds-memory` Mode 4 (Distill) as a prose protocol;
+  `rules.jsonl` schema (language-neutral); ExpeL evidence flipped to implemented; wired into
+  ds-star-plus planner, ds-conduct plan-assembly, ds-spike personas, ds-clarify checklist. No new code.
+- **Phase 2b (search-experience store) ✅** — `search_experience.jsonl` schema + prose record/seed
+  hooks in ds-search; dual-experience evidence flipped (short/long-term framing); wired into
+  ds-star-plus search_mode, ds-spike aggregation, ds-conduct escalation. No new code.
+- **All green:** CI path-checks, frontmatter, registry, manifests, and all unittest suites pass.
+  Three patterns shipped as **prose + JSONL only** (Philosophy B — no language imposed on the user).

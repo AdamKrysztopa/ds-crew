@@ -52,6 +52,11 @@ For columns that share a name/role across files, check **join compatibility**: d
 value-overlap, and whether a join would fan out (one-to-many) or drop rows (non-overlap). This is
 where multi-file analyses silently go wrong; flag it before anyone joins.
 
+The per-file digest this stage produces — column names + dtypes, sheet/table names, low-cardinality
+value lists, and candidate keys — is exactly what the column-level retrieval protocol scores against
+(`../ds-star-plus/references/retrieval.md` Stage 3). In data-lake mode (N > ~100 files), this profile
+*is* the input that lets retrieval find on-topic files by structure rather than filename guesswork.
+
 ### Stage 4 — Report
 
 Emit a single report (markdown by default; the structure is in `references/checks.md`), ending with
